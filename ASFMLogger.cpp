@@ -1,5 +1,5 @@
 
-// FrameworkLogger.cpp
+// Enhanced ASFMLogger Implementation
 #include "ASFMLogger.hpp"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/rotating_file_sink.h>
@@ -10,6 +10,8 @@
 #include <vector>
 #include <stdexcept>
 #include <sstream>
+#include <iostream>
+#include <algorithm>
 
 
 
@@ -17,8 +19,13 @@ std::string Logger::last_error_; // Define static member
 std::mutex Logger::error_mutex_; // Define static mutex
 
 std::shared_ptr<Logger> Logger::getInstance() {
+    return getInstance("ASFMLogger", "");
+}
+
+std::shared_ptr<Logger> Logger::getInstance(const std::string& application_name,
+                                            const std::string& process_name) {
     // C++11 static local variable initialization is thread-safe
-    static std::shared_ptr<Logger> instance = std::make_shared<Logger>();
+    static std::shared_ptr<Logger> instance = std::make_shared<Logger>(application_name, process_name);
     return instance;
 }
 
@@ -26,13 +33,25 @@ std::shared_ptr<Logger> Logger::getInstance() {
 
 
 
-Logger::Logger() {
+Logger::Logger() : Logger("ASFMLogger", "") {}
+
+Logger::Logger(const std::string& application_name, const std::string& process_name)
+    : application_name_(application_name), process_name_(process_name),
+      enhanced_features_enabled_(false), database_logging_enabled_(false),
+      shared_memory_enabled_(false), total_messages_processed_(0),
+      database_messages_persisted_(0), shared_memory_messages_sent_(0),
+      queue_overflow_events_(0) {
+
     try {
         // Create a default console logger as a fallback
         logger_ = spdlog::stdout_color_mt("framework_default");
         logger_->set_level(spdlog::level::info);
         logger_->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] [%t] %v");
         is_configured_ = true;
+
+        // Initialize enhanced features
+        initializeEnhancedFeatures();
+
     } catch (const spdlog::spdlog_ex& ex) {
         // If the default logger fails, leave logger_ as nullptr
         logger_ = nullptr;
