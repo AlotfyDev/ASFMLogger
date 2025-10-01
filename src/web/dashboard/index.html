@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASFMLogger Dashboard - Real-Time Log Monitoring</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.0/index.min.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1>🚀 ASFMLogger Dashboard</h1>
+                <p>Real-Time Enterprise Logging & Monitoring</p>
+                <div class="connection-status" id="connectionStatus">
+                    <span class="status-indicator"></span>
+                    <span class="status-text">Connecting...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Control Panel -->
+            <section class="control-panel">
+                <div class="panel-section">
+                    <h3>🎛️ Log Controls</h3>
+                    <div class="control-group">
+                        <label for="applicationFilter">Application:</label>
+                        <select id="applicationFilter">
+                            <option value="">All Applications</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="componentFilter">Component:</label>
+                        <select id="componentFilter">
+                            <option value="">All Components</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="levelFilter">Min Level:</label>
+                        <select id="levelFilter">
+                            <option value="TRACE">TRACE</option>
+                            <option value="DEBUG">DEBUG</option>
+                            <option value="INFO" selected>INFO</option>
+                            <option value="WARN">WARN</option>
+                            <option value="ERROR">ERROR</option>
+                            <option value="CRITICAL">CRITICAL</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="timeRange">Time Range:</label>
+                        <select id="timeRange">
+                            <option value="1">Last Hour</option>
+                            <option value="24" selected>Last 24 Hours</option>
+                            <option value="168">Last Week</option>
+                            <option value="720">Last Month</option>
+                        </select>
+                    </div>
+                    <button id="refreshBtn" class="btn-primary">🔄 Refresh Data</button>
+                </div>
+
+                <div class="panel-section">
+                    <h3>⚙️ System Controls</h3>
+                    <button id="clearLogsBtn" class="btn-secondary">🗑️ Clear Display</button>
+                    <button id="exportLogsBtn" class="btn-secondary">📥 Export Logs</button>
+                    <button id="toggleAutoRefresh" class="btn-secondary">⏸️ Pause Auto-Refresh</button>
+                </div>
+
+                <div class="panel-section">
+                    <h3>📊 Quick Stats</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Messages:</span>
+                            <span class="stat-value" id="totalMessages">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Errors:</span>
+                            <span class="stat-value error-count" id="errorCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Active Apps:</span>
+                            <span class="stat-value" id="activeApps">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Queue Size:</span>
+                            <span class="stat-value" id="queueSize">0</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Real-Time Log Stream -->
+            <section class="log-stream-section">
+                <div class="section-header">
+                    <h2>📋 Real-Time Log Stream</h2>
+                    <div class="stream-controls">
+                        <button id="pauseStreamBtn" class="btn-small">⏸️ Pause</button>
+                        <button id="clearStreamBtn" class="btn-small">🗑️ Clear</button>
+                        <span class="stream-info">Live updates every 2 seconds</span>
+                    </div>
+                </div>
+                <div id="logStream" class="log-stream">
+                    <div class="stream-placeholder">
+                        <p>Waiting for log messages...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts and Analytics -->
+            <section class="analytics-section">
+                <div class="charts-grid">
+                    <!-- Message Rate Chart -->
+                    <div class="chart-container">
+                        <h3>📈 Message Rate (per minute)</h3>
+                        <canvas id="messageRateChart"></canvas>
+                    </div>
+
+                    <!-- Error Distribution Chart -->
+                    <div class="chart-container">
+                        <h3>🔥 Error Distribution</h3>
+                        <canvas id="errorDistributionChart"></canvas>
+                    </div>
+
+                    <!-- Application Activity Chart -->
+                    <div class="chart-container">
+                        <h3>🏢 Application Activity</h3>
+                        <canvas id="applicationActivityChart"></canvas>
+                    </div>
+
+                    <!-- System Health Chart -->
+                    <div class="chart-container">
+                        <h3>💚 System Health</h3>
+                        <canvas id="systemHealthChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Log Search and Filter -->
+            <section class="search-section">
+                <div class="section-header">
+                    <h2>🔍 Log Search & Analysis</h2>
+                </div>
+                <div class="search-controls">
+                    <input type="text" id="searchInput" placeholder="Search logs..." class="search-input">
+                    <button id="searchBtn" class="btn-primary">🔍 Search</button>
+                    <button id="advancedSearchBtn" class="btn-secondary">⚙️ Advanced</button>
+                </div>
+                <div id="searchResults" class="search-results">
+                    <div class="search-placeholder">
+                        <p>Enter search terms to find specific log messages</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <p>&copy; 2025 ASFMLogger - Enterprise Logging Platform</p>
+            <p>Real-time monitoring dashboard for advanced logging and analytics</p>
+        </footer>
+    </div>
+
+    <!-- Advanced Search Modal -->
+    <div id="advancedSearchModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🔍 Advanced Search</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="modalSearchText">Search Text:</label>
+                    <input type="text" id="modalSearchText" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="modalApplication">Application:</label>
+                    <select id="modalApplication" class="form-control">
+                        <option value="">All Applications</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="modalComponent">Component:</label>
+                    <select id="modalComponent" class="form-control">
+                        <option value="">All Components</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="modalLevel">Log Level:</label>
+                    <select id="modalLevel" class="form-control">
+                        <option value="">All Levels</option>
+                        <option value="TRACE">TRACE</option>
+                        <option value="DEBUG">DEBUG</option>
+                        <option value="INFO">INFO</option>
+                        <option value="WARN">WARN</option>
+                        <option value="ERROR">ERROR</option>
+                        <option value="CRITICAL">CRITICAL</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="modalStartTime">Start Time:</label>
+                    <input type="datetime-local" id="modalStartTime" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="modalEndTime">End Time:</label>
+                    <input type="datetime-local" id="modalEndTime" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="modalSearchBtn" class="btn-primary">🔍 Search</button>
+                <button class="btn-secondary close-modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
