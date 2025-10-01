@@ -71,46 +71,57 @@ struct BadLogTimestamp {
 #### Purpose
 - Pure logic without state
 - Static methods only
-- No instance variables
+- No instance variables or hard-coded values
 - Thread-safe by design
+- All behavior controlled by parameters
 
 #### Coding Standards
 ```cpp
-// ✅ CORRECT: Pure toolbox class
+// ✅ CORRECT: Pure toolbox class with no hard-coded values
 class LogMessageToolbox {
 private:
-    static std::atomic<uint32_t> message_counter_;  // Only static variables allowed
+    // Only static variables for shared state (counters, etc.)
+    static std::atomic<uint32_t> message_counter_;
 
 public:
-    // Pure functions - same input = same output
+    // Pure functions - same input = same output, no hard-coded behavior
     static uint32_t GenerateMessageId() {
         return message_counter_.fetch_add(1);
     }
 
-    static bool ValidateMessage(const LogMessageData& data) {  // const reference only
+    static bool ValidateMessage(const LogMessageData& data) {
         return data.message_id != 0 && data.process_id != 0;
     }
 
-    static std::string MessageToString(const LogMessageData& data) {
+    static std::string MessageToString(const LogMessageData& data,
+                                       const std::string& format_pattern = "[%Y-%m-%d %H:%M:%S] %v") {
+        // Format pattern passed as parameter, not hard-coded
         std::ostringstream oss;
-        oss << "Message: " << data.message;
-        return oss.str();  // Return by value OK for toolbox
+        // Use format_pattern to format the message
+        oss << data.message;
+        return oss.str();
     }
 
-    // Factory methods for creating data structures
+    // Factory methods with all behavior controlled by parameters
     static LogMessageData CreateMessage(LogMessageType type,
-                                       const std::string& content) {
+                                       const std::string& content,
+                                       const std::string& component = "",
+                                       const std::string& function = "",
+                                       uint32_t instance_id = 0) {
         LogMessageData data;
         data.message_id = GenerateMessageId();
         data.type = type;
-        // ... populate other fields
+        data.instance_id = instance_id;
+        // All fields populated based on parameters
         return data;
     }
 
     // ❌ NEVER DO THIS:
-    // LogMessageToolbox toolbox;  // No instances!
-    // int instance_var_;           // No instance variables!
-    // virtual void process();      // No virtual methods!
+    // LogMessageToolbox toolbox;                    // No instances!
+    // int instance_var_;                            // No instance variables!
+    // virtual void process();                       // No virtual methods!
+    // static std::string format = "[%H:%M:%S]";     // No hard-coded format strings!
+    // static const int MAX_SIZE = 1024;             // No hard-coded constants!
 };
 
 // ✅ CORRECT: Specialized toolbox for specific operations

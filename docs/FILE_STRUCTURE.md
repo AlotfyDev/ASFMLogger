@@ -8,53 +8,77 @@ This document provides a comprehensive overview of the complete file structure f
 
 ```
 ASFMLogger/
-├── 📁 docs/                          # Documentation and guides
-│   ├── ARCHITECTURE_GUIDE.md         # Complete architecture documentation
-│   ├── DEVELOPMENT_PLAN.md           # Comprehensive development roadmap
-│   └── FILE_STRUCTURE.md             # This file - complete file structure
+├── 📁 docs/                                    # Documentation and guides
+│   ├── ARCHITECTURE_GUIDE.md                   # Complete architecture documentation
+│   ├── DEVELOPMENT_PLAN.md                     # Comprehensive development roadmap
+│   └── FILE_STRUCTURE.md                       # This file - complete file structure
 │
-├── 📁 src/                           # Source code directory
-│   ├── 📁 structs/                   # Layer 1: POD data structures
-│   │   ├── LogDataStructures.hpp     # Core enums and data structures
-│   │   ├── LoggerInstanceData.hpp    # Instance management data
-│   │   ├── ImportanceConfiguration.hpp # Importance framework data
-│   │   ├── PersistencePolicy.hpp     # Persistence policy data
-│   │   ├── SmartQueueConfiguration.hpp # Queue configuration data
-│   │   ├── DatabaseConfiguration.hpp  # Database configuration data
-│   │   ├── ConfigurationData.hpp     # Configuration system data
-│   │   └── MonitoringData.hpp        # Monitoring and metrics data
+├── 📁 src/                                     # Source code directory
+│   ├── 📁 structs/                             # Layer 1: POD data structures
+│   │   ├── LogDataStructures.hpp               # Core enums and data structures
+│   │   ├── LoggerInstanceData.hpp              # Instance management data
+│   │   ├── ImportanceConfiguration.hpp        # Importance framework data
+│   │   ├── PersistencePolicy.hpp              # Persistence policy data
+│   │   ├── SmartQueueConfiguration.hpp        # Queue configuration data
+│   │   ├── DatabaseConfiguration.hpp           # Database configuration data
+│   │   ├── ConfigurationData.hpp              # Configuration system data
+│   │   ├── MonitoringData.hpp                 # Monitoring and metrics data
+│   │   └── CrossLanguageSerializationData.hpp # Cross-language serialization data
 │   │
-│   ├── 📁 toolbox/                   # Layer 2: Static toolbox classes
-│   │   ├── LogMessageToolbox.hpp     # Message manipulation utilities
-│   │   ├── TimestampToolbox.hpp      # Timestamp operations
-│   │   ├── LoggerInstanceToolbox.hpp # Instance management logic
-│   │   ├── ImportanceToolbox.hpp     # Importance resolution logic
-│   │   ├── ContextualPersistenceToolbox.hpp # Persistence decision logic
-│   │   ├── SmartQueueToolbox.hpp     # Queue management logic
-│   │   ├── DatabaseToolbox.hpp       # Database operations logic
-│   │   ├── ConfigurationToolbox.hpp  # Configuration parsing logic
-│   │   └── MonitoringToolbox.hpp     # Monitoring and adaptation logic
+│   ├── 📁 toolbox/                             # Layer 2: Static toolbox classes
+│   │   ├── LogMessageToolbox.hpp               # Message manipulation utilities
+│   │   ├── TimestampToolbox.hpp                # Timestamp operations
+│   │   ├── LoggerInstanceToolbox.hpp           # Instance management logic
+│   │   ├── ImportanceToolbox.hpp               # Importance resolution logic
+│   │   ├── ContextualPersistenceToolbox.hpp   # Persistence decision logic
+│   │   ├── SmartQueueToolbox.hpp               # Queue management logic
+│   │   ├── DatabaseToolbox.hpp                 # Database operations logic
+│   │   ├── ConfigurationToolbox.hpp            # Configuration parsing logic
+│   │   ├── MonitoringToolbox.hpp               # Monitoring and adaptation logic
+│   │   └── CrossLanguageSerializationToolbox.hpp # Cross-language serialization
 │   │
-│   ├── 📁 stateful/                  # Layer 3: Stateful wrapper classes
-│   │   ├── LogMessage.hpp            # Stateful message wrapper
-│   │   ├── LoggerInstance.hpp        # Stateful instance wrapper
-│   │   ├── ImportanceMapper.hpp      # Stateful importance configuration
-│   │   ├── SmartMessageQueue.hpp     # Stateful queue wrapper
-│   │   └── DatabaseLogger.hpp        # Stateful database wrapper
+│   ├── 📁 stateful/                            # Layer 3: Stateful wrapper classes
+│   │   ├── LogMessage.hpp                      # Stateful message wrapper
+│   │   ├── LoggerInstance.hpp                  # Stateful instance wrapper
+│   │   ├── ImportanceMapper.hpp                # Stateful importance configuration
+│   │   ├── SmartMessageQueue.hpp               # Stateful queue wrapper
+│   │   ├── DatabaseLogger.hpp                  # Stateful database wrapper
+│   │   └── CrossLanguageMessage.hpp            # Cross-language message wrapper
 │   │
-│   ├── 📁 managers/                  # Manager and coordinator classes
-│   │   ├── LoggerInstanceManager.hpp # Instance lifecycle management
-│   │   ├── ContextualPersistenceManager.hpp # Persistence policy management
-│   │   ├── MessageQueueManager.hpp    # Queue coordination
-│   │   ├── ConfigurationManager.hpp  # Configuration lifecycle
-│   │   └── MonitoringManager.hpp     # Monitoring and adaptation
+│   ├── 📁 managers/                            # Manager and coordinator classes
+│   │   ├── LoggerInstanceManager.hpp           # Instance lifecycle management
+│   │   ├── ContextualPersistenceManager.hpp   # Persistence policy management
+│   │   ├── MessageQueueManager.hpp             # Queue coordination
+│   │   ├── ConfigurationManager.hpp            # Configuration lifecycle
+│   │   ├── MonitoringManager.hpp               # Monitoring and adaptation
+│   │   └── CrossLanguageBridge.hpp             # Cross-language bridge management
 │   │
-│   └── 📁 enhanced/                  # Enhanced implementations
-│       └── ASFMLoggerEnhanced.cpp    # Enhanced logger implementation
+│   ├── 📁 enhanced/                            # Enhanced implementations
+│   │   └── ASFMLoggerEnhanced.cpp              # Enhanced logger implementation
+│   │
+│   ├── 📁 utils/                               # Utility and helper classes
+│   │   └── CrossLanguageSerialization.hpp      # Cross-language serialization utilities
+│   │
+│   └── 📁 web/                                 # Web interface components
+│       ├── RestApiServer.hpp                   # REST API server implementation
+│       └── 📁 dashboard/                       # Web dashboard interface
+│           ├── index.html                      # Main dashboard HTML
+│           ├── styles.css                      # Dashboard CSS styles
+│           └── dashboard.js                    # Dashboard JavaScript
 │
-├── 📄 ASFMLogger.hpp                 # Enhanced main header (backward compatible)
-├── 📄 ASFMLogger.cpp                 # Enhanced main implementation
-└── 📄 README.md                      # Updated project documentation
+├── 📁 wrappers/                                # Multi-language wrappers
+│   ├── 📁 python/                             # Python language bindings
+│   │   └── asfm_logger.py                     # Python ASFMLogger wrapper
+│   │
+│   ├── 📁 csharp/                             # C# language bindings
+│   │   └── ASFMLogger.cs                      # C# ASFMLogger wrapper
+│   │
+│   └── 📁 mql5/                               # MQL5 language bindings
+│       └── ASFMLogger.mq5                     # MQL5 MetaTrader wrapper
+│
+├── 📄 ASFMLogger.hpp                           # Enhanced main header (backward compatible)
+├── 📄 ASFMLogger.cpp                           # Enhanced main implementation
+└── 📄 README.md                                # Updated project documentation
 ```
 
 ## Detailed File Descriptions
@@ -64,7 +88,7 @@ ASFMLogger/
 | File | Purpose | Description |
 |------|---------|-------------|
 | `docs/ARCHITECTURE_GUIDE.md` | Architecture Documentation | Complete guide to the 3-layer toolbox architecture pattern |
-| `docs/DEVELOPMENT_PLAN.md` | Development Roadmap | Comprehensive 6-phase development plan with 55+ tasks |
+| `docs/DEVELOPMENT_PLAN.md` | Development Roadmap | Comprehensive 7-phase development plan with 65+ tasks |
 | `docs/FILE_STRUCTURE.md` | File Organization | This document - complete file structure overview |
 
 ### Core Implementation Files
@@ -237,13 +261,16 @@ stateful/[Component].hpp
 | Directory | Files | Purpose | Lines of Code |
 |-----------|-------|---------|---------------|
 | `docs/` | 3 | Documentation | ~1,500 |
-| `src/structs/` | 8 | POD Structures | ~1,200 |
-| `src/toolbox/` | 9 | Pure Logic | ~3,500 |
-| `src/stateful/` | 5 | State Management | ~1,800 |
-| `src/managers/` | 5 | Coordination | ~1,900 |
+| `src/structs/` | 8 | POD Structures | ~1,500 |
+| `src/toolbox/` | 9 | Pure Logic | ~4,000 |
+| `src/stateful/` | 5 | State Management | ~2,200 |
+| `src/managers/` | 5 | Coordination | ~2,300 |
 | `src/enhanced/` | 1 | Integration | ~400 |
+| `src/utils/` | 1 | Utilities | ~400 |
+| `src/web/` | 3 | Web Interface | ~1,200 |
+| `wrappers/` | 3 | Language Bindings | ~1,500 |
 | Root | 3 | Core Implementation | ~600 |
-| **Total** | **25+** | **Complete Framework** | **~20,000+** |
+| **Total** | **35+** | **Complete Framework** | **~25,000+** |
 
 ## Integration Points
 
