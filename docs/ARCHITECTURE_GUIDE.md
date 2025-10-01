@@ -23,6 +23,87 @@ ASFMLogger follows a **3-layer architecture** that separates concerns for maximu
 - ❌ **No direct data manipulation** - Always use toolbox methods
 - ❌ **No virtual methods in toolbox** - Direct static calls only
 
+### 🎛️ Three-Level Usage Pattern
+
+#### **Level 1: Instantiation/Configuration** 🏗️
+**Where**: Application startup, configuration phase
+**Purpose**: Create and configure logging infrastructure
+**Components**: Managers, configuration loaders, initialization code
+```cpp
+// ✅ CORRECT: Configuration level
+auto& instance_manager = GetGlobalInstanceManager();
+auto& config_manager = GetGlobalConfigurationManager("MyApp");
+auto& monitoring_manager = GetGlobalMonitoringManager("MyApp");
+
+// Configure for application lifecycle
+instance_manager.registerInstance("TradingSystem", "OrderProcessor");
+config_manager.loadFromFile("config/trading_system.json");
+monitoring_manager.startMonitoring();
+```
+
+#### **Level 2: Consumer Setup** ⚙️
+**Where**: Individual classes/modules that need logging
+**Purpose**: Get configured logger instance for consumption
+**Components**: Logger instances, consumer-specific setup
+```cpp
+// ✅ CORRECT: Consumer setup level
+class TradingEngine {
+private:
+    LoggerInstance instance_;
+    ImportanceMapper* importance_mapper_;
+    ContextualPersistenceManager* persistence_manager_;
+
+public:
+    TradingEngine() {
+        // Get pre-configured components
+        auto& instance_manager = GetGlobalInstanceManager();
+        instance_ = instance_manager.findInstance("TradingSystem");
+
+        auto& config_manager = GetGlobalConfigurationManager("TradingSystem");
+        importance_mapper_ = new ImportanceMapper("TradingSystem");
+        persistence_manager_ = new ContextualPersistenceManager("TradingSystem");
+    }
+};
+```
+
+#### **Level 3: Consumption** 📝
+**Where**: Actual logging operations during runtime
+**Purpose**: Log messages with minimal overhead
+**Components**: Simple logger method calls
+```cpp
+// ✅ CORRECT: Consumption level
+void TradingEngine::ProcessOrder(const Order& order) {
+    // Simple, fast logging calls
+    logger_->info("OrderProcessor", "ProcessOrder",
+                  "Processing order {} for customer {}",
+                  order.id, order.customer_id);
+
+    // Automatic routing and persistence happens behind the scenes
+    if (order.type == OrderType::CRITICAL) {
+        logger_->critical("OrderProcessor", "ProcessOrder",
+                         "Critical order detected: {}", order.id);
+    }
+}
+```
+
+### 🚫 Incorrect Usage Patterns
+```cpp
+// ❌ WRONG: Configuration in consumption code
+void ProcessOrder(const Order& order) {
+    auto logger = Logger::getInstance("TradingSystem");  // Configuration in consumption!
+    auto config = LoadConfiguration("config.json");       // Configuration in consumption!
+    logger->configure(true, "app.log");                  // Configuration in consumption!
+    logger->info("Processing order");                    // Mixed levels!
+}
+
+// ❌ WRONG: Heavy operations in logging calls
+void ProcessOrder(const Order& order) {
+    auto& manager = GetGlobalInstanceManager();          // Heavy operation in consumption!
+    auto instance = manager.registerInstance("Temp");    // Heavy operation in consumption!
+    logger->info("Processing order");                    // Should be simple call!
+}
+```
+
 ## Layer Definitions
 
 ### Layer 1: POD (Plain Old Data) Structures
@@ -434,30 +515,155 @@ public:
 4. **Validation**: Always validate using toolbox before using data
 5. **Documentation**: Document the layer each class belongs to
 
+## Codebase Organization Principles
+
+### 📁 Implementation Structure
+```
+ASFMLogger/
+├── src/                          # Core implementation
+│   ├── structs/                  # Layer 1: Data structures only
+│   ├── toolbox/                  # Layer 2: Pure logic only
+│   ├── stateful/                 # Layer 3: State management
+│   ├── managers/                 # Coordination layer
+│   ├── enhanced/                 # Enhanced implementations
+│   ├── utils/                    # Utility classes
+│   └── web/                      # Web interface components
+├── wrappers/                     # Multi-language bindings
+├── docs/                         # Documentation
+└── [config files]               # Configuration templates
+```
+
+### 🔗 Dependency Flow
+```
+Configuration Files → Managers → Stateful Objects → Toolbox → POD Structs
+                                ↓
+                          Enhanced Logger → External APIs
+```
+
+### 📊 Layer Responsibilities
+
+#### **POD Structs Layer** (Pure Data)
+```cpp
+// ✅ Only data, no behavior
+struct LogMessageData {
+    uint32_t id;           // Data only
+    char message[1024];    // Data only
+    // No methods!
+};
+```
+
+#### **Toolbox Layer** (Pure Logic)
+```cpp
+// ✅ Only logic, no state, no hard-coded values
+class LogMessageToolbox {
+public:
+    static uint32_t GenerateId();  // Pure logic
+    static bool Validate(const LogMessageData& data);  // Pure logic
+    static std::string Format(const LogMessageData& data,
+                              const std::string& format);  // Parameter-driven
+};
+```
+
+#### **Stateful Layer** (State + Toolbox Usage)
+```cpp
+// ✅ State management using toolbox
+class LogMessage {
+private:
+    LogMessageData data_;  // State
+public:
+    std::string format() const {
+        return LogMessageToolbox::Format(data_, "[%H:%M:%S] %v");  // Uses toolbox
+    }
+};
+```
+
+#### **Manager Layer** (Coordination)
+```cpp
+// ✅ Coordinates multiple components
+class LoggerInstanceManager {
+public:
+    LoggerInstance registerInstance(const std::string& app_name) {
+        // Coordinates instance creation and registration
+        return LoggerInstance(LoggerInstanceToolbox::Create(app_name));
+    }
+};
+```
+
 ## File Structure
 
 ```
-src/
-├── structs/           # Layer 1: POD data structures
-│   ├── LogMessageData.hpp
-│   ├── LogTimestamp.hpp
-│   └── ...
-├── toolbox/          # Layer 2: Static toolbox classes
-│   ├── LogMessageToolbox.hpp
-│   ├── LogMessageToolbox.cpp
-│   ├── TimestampToolbox.hpp
-│   ├── TimestampToolbox.cpp
-│   └── ...
-├── stateful/         # Layer 3: Stateful objects
-│   ├── LogMessage.hpp
-│   ├── LogMessage.cpp
-│   ├── Timestamp.hpp
-│   ├── Timestamp.cpp
-│   └── ...
-└── managers/         # Collection and lifecycle management
-    ├── LogMessageManager.hpp
-    ├── LogMessageManager.cpp
-    └── ...
+ASFMLogger/
+├── 📁 docs/                                    # Documentation and guides
+│   ├── ARCHITECTURE_GUIDE.md                   # Complete architecture documentation
+│   ├── DEVELOPMENT_PLAN.md                     # Comprehensive development roadmap
+│   └── FILE_STRUCTURE.md                       # This file - complete file structure
+│
+├── 📁 src/                                     # Source code directory
+│   ├── 📁 structs/                             # Layer 1: POD data structures
+│   │   ├── LogDataStructures.hpp               # Core enums and data structures
+│   │   ├── LoggerInstanceData.hpp              # Instance management data
+│   │   ├── ImportanceConfiguration.hpp        # Importance framework data
+│   │   ├── PersistencePolicy.hpp              # Persistence policy data
+│   │   ├── SmartQueueConfiguration.hpp        # Queue configuration data
+│   │   ├── DatabaseConfiguration.hpp           # Database configuration data
+│   │   ├── ConfigurationData.hpp              # Configuration system data
+│   │   ├── MonitoringData.hpp                 # Monitoring and metrics data
+│   │   └── CrossLanguageSerializationData.hpp # Cross-language serialization data
+│   │
+│   ├── 📁 toolbox/                             # Layer 2: Static toolbox classes
+│   │   ├── LogMessageToolbox.hpp               # Message manipulation utilities
+│   │   ├── TimestampToolbox.hpp                # Timestamp operations
+│   │   ├── LoggerInstanceToolbox.hpp           # Instance management logic
+│   │   ├── ImportanceToolbox.hpp               # Importance resolution logic
+│   │   ├── ContextualPersistenceToolbox.hpp   # Persistence decision logic
+│   │   ├── SmartQueueToolbox.hpp               # Queue management logic
+│   │   ├── DatabaseToolbox.hpp                 # Database operations logic
+│   │   ├── ConfigurationToolbox.hpp            # Configuration parsing logic
+│   │   ├── MonitoringToolbox.hpp               # Monitoring and adaptation logic
+│   │   └── CrossLanguageSerializationToolbox.hpp # Cross-language serialization
+│   │
+│   ├── 📁 stateful/                            # Layer 3: Stateful wrapper classes
+│   │   ├── LogMessage.hpp                      # Stateful message wrapper
+│   │   ├── LoggerInstance.hpp                  # Stateful instance wrapper
+│   │   ├── ImportanceMapper.hpp                # Stateful importance configuration
+│   │   ├── SmartMessageQueue.hpp               # Stateful queue wrapper
+│   │   ├── DatabaseLogger.hpp                  # Stateful database wrapper
+│   │   └── CrossLanguageMessage.hpp            # Cross-language message wrapper
+│   │
+│   ├── 📁 managers/                            # Manager and coordinator classes
+│   │   ├── LoggerInstanceManager.hpp           # Instance lifecycle management
+│   │   ├── ContextualPersistenceManager.hpp   # Persistence policy management
+│   │   ├── MessageQueueManager.hpp             # Queue coordination
+│   │   ├── ConfigurationManager.hpp            # Configuration lifecycle
+│   │   ├── MonitoringManager.hpp               # Monitoring and adaptation
+│   │   └── CrossLanguageBridge.hpp             # Cross-language bridge management
+│   │
+│   ├── 📁 enhanced/                            # Enhanced implementations
+│   │   └── ASFMLoggerEnhanced.cpp              # Enhanced logger implementation
+│   │
+│   ├── 📁 utils/                               # Utility and helper classes
+│   │   └── CrossLanguageSerialization.hpp      # Cross-language serialization utilities
+│   │
+│   └── 📁 web/                                 # Web interface components
+│       ├── RestApiServer.hpp                   # REST API server implementation
+│       └── 📁 dashboard/                       # Web dashboard interface
+│           ├── index.html                      # Main dashboard HTML
+│           ├── styles.css                      # Dashboard CSS styles
+│           └── dashboard.js                    # Dashboard JavaScript
+│
+├── 📁 wrappers/                                # Multi-language wrappers
+│   ├── 📁 python/                             # Python language bindings
+│   │   └── asfm_logger.py                     # Python ASFMLogger wrapper
+│   │
+│   ├── 📁 csharp/                             # C# language bindings
+│   │   └── ASFMLogger.cs                      # C# ASFMLogger wrapper
+│   │
+│   └── 📁 mql5/                               # MQL5 language bindings
+│       └── ASFMLogger.mq5                     # MQL5 MetaTrader wrapper
+│
+├── 📄 ASFMLogger.hpp                           # Enhanced main header (backward compatible)
+├── 📄 ASFMLogger.cpp                           # Enhanced main implementation
+└── 📄 README.md                                # Updated project documentation
 ```
 
 This architecture ensures ASFMLogger is maintainable, testable, and performant while providing clear separation of concerns and maximum reusability.
