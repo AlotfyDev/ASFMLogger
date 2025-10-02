@@ -19,27 +19,88 @@
  * - All existing APIs work exactly as before
  * - No breaking changes to existing code
  * - Enhanced features are opt-in
+ *
+ * USAGE MODES:
+ * - Built Library: Include this header and link against ASFMLogger library
+ * - Header-Only: Define ASFMLOGGER_HEADER_ONLY before including this header
  */
 
-// Include spdlog headers - required for proper compilation
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/rotating_file_sink.h>
-#include <spdlog/sinks/dist_sink.h>
-#include <spdlog/common.h>
+// Header-only mode configuration
+#ifdef ASFMLOGGER_HEADER_ONLY
+    // Header-only mode: Use inline implementation
+    #define ASFMLOGGER_INLINE inline
+    #define ASFMLOGGER_HEADER_ONLY_INLINE inline
 
-// Include enhanced ASFMLogger components
-#include "structs/LogDataStructures.hpp"
-#include "structs/ImportanceConfiguration.hpp"
-#include "structs/PersistencePolicy.hpp"
-#include "structs/DatabaseConfiguration.hpp"
-#include "structs/SmartQueueConfiguration.hpp"
-#include "stateful/LoggerInstance.hpp"
-#include "stateful/ImportanceMapper.hpp"
-#include "managers/ContextualPersistenceManager.hpp"
-#include "stateful/SmartMessageQueue.hpp"
-#include "managers/MessageQueueManager.hpp"
-#include "stateful/DatabaseLogger.hpp"
+    // Include necessary standard library headers for header-only mode
+    #include <iostream>
+    #include <sstream>
+    #include <fstream>
+    #include <algorithm>
+    #include <memory>
+    #include <mutex>
+    #include <atomic>
+    #include <thread>
+    #include <chrono>
+    #include <vector>
+    #include <deque>
+    #include <unordered_map>
+    #include <string>
+    #include <cstring>
+    #include <cstdint>
+    #include <ctime>
+    #include <iomanip>
+
+    // Windows-specific includes
+    #ifdef _WIN32
+    #include <Windows.h>
+    #include <process.h>
+    #include <direct.h>
+    #else
+    #include <unistd.h>
+    #include <sys/types.h>
+    #include <sys/stat.h>
+    #include <pthread.h>
+    #include <errno.h>
+    #endif
+
+    // spdlog header-only includes
+    #include <spdlog/spdlog.h>
+    #include <spdlog/sinks/stdout_color_sinks.h>
+    #include <spdlog/sinks/rotating_file_sink.h>
+    #include <spdlog/sinks/dist_sink.h>
+    #include <spdlog/common.h>
+
+    // Include core ASFMLogger headers for header-only mode
+    #include "structs/LogDataStructures.hpp"
+
+    // Include the header-only implementation
+    #include "ASFMLogger_HeaderOnly.hpp"
+
+#else
+    // Built library mode: Use compiled library
+    #define ASFMLOGGER_INLINE
+    #define ASFMLOGGER_HEADER_ONLY_INLINE
+
+    // Include spdlog headers - required for proper compilation
+    #include <spdlog/spdlog.h>
+    #include <spdlog/sinks/stdout_color_sinks.h>
+    #include <spdlog/sinks/rotating_file_sink.h>
+    #include <spdlog/sinks/dist_sink.h>
+    #include <spdlog/common.h>
+
+    // Include enhanced ASFMLogger components
+    #include "structs/LogDataStructures.hpp"
+    #include "structs/ImportanceConfiguration.hpp"
+    #include "structs/PersistencePolicy.hpp"
+    #include "structs/DatabaseConfiguration.hpp"
+    #include "structs/SmartQueueConfiguration.hpp"
+    #include "stateful/LoggerInstance.hpp"
+    #include "stateful/ImportanceMapper.hpp"
+    #include "managers/ContextualPersistenceManager.hpp"
+    #include "stateful/SmartMessageQueue.hpp"
+    #include "managers/MessageQueueManager.hpp"
+    #include "stateful/DatabaseLogger.hpp"
+#endif
 
 
 

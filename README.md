@@ -6,6 +6,33 @@
 
 ASFMLogger (Abstract Shared File Map Logger) is a **world-class logging platform** that has evolved from a simple C++ logging library into a comprehensive enterprise solution supporting:
 
+### 🎯 Two Usage Approaches
+
+ASFMLogger offers **two complementary approaches** for maximum flexibility:
+
+#### **Built Library Approach** (Full Enterprise Features)
+- Complete enterprise-grade logging framework
+- Multi-instance management and importance framework
+- Database integration and shared memory support
+- Real-time monitoring and web dashboard
+- Advanced queue management and contextual persistence
+
+#### **Header-Only Approach** (Easy Integration)
+- Lightweight, header-only implementation
+- Zero build configuration required
+- Perfect for simple projects and quick integration
+- Same API as built library for basic logging
+- Ideal for embedded systems and CI/CD environments
+
+### 🚀 Choose Your Approach
+
+| Feature | Header-Only | Built Library |
+|---------|-------------|---------------|
+| **Setup Complexity** | ⭐⭐⭐⭐⭐ (Just include) | ⭐⭐⭐ (Build library) |
+| **Features** | ⭐⭐⭐ (Basic logging) | ⭐⭐⭐⭐⭐ (Full enterprise) |
+| **Build Time** | ⭐⭐⭐⭐⭐ (No build) | ⭐⭐⭐ (Library build) |
+| **Integration** | ⭐⭐⭐⭐⭐ (Copy-paste) | ⭐⭐⭐ (Link library) |
+
 - **🔥 Multi-Language Integration**: C++, Python, C#, MQL5, and Web interfaces
 - **🖥️ Real-Time Monitoring**: Live dashboards with WebSocket streaming
 - **🧠 Intelligent Optimization**: Adaptive behavior based on system conditions
@@ -87,7 +114,7 @@ Include the header in your project:
 
 ## 🚀 Quick Start
 
-### Basic Usage (Backward Compatible)
+### Option 1: Built Library (Full Features)
 ```cpp
 #include "ASFMLogger.hpp"
 
@@ -95,6 +122,22 @@ Include the header in your project:
 auto logger = Logger::getInstance();
 
 // Log messages
+logger->info("Application started");
+logger->debug("Debug information: {}", some_variable);
+logger->warn("This is a warning");
+logger->error("An error occurred: {}", error_message);
+logger->critical("Critical error!");
+```
+
+### Option 2: Header-Only (Easy Integration)
+```cpp
+#define ASFMLOGGER_HEADER_ONLY
+#include "ASFMLogger.hpp"
+
+// Get the logger instance - no building required!
+auto logger = Logger::getInstance();
+
+// Log messages (same API!)
 logger->info("Application started");
 logger->debug("Debug information: {}", some_variable);
 logger->warn("This is a warning");

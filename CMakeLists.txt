@@ -11,14 +11,26 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-# Use vcpkg for dependency management
-set(CMAKE_TOOLCHAIN_FILE "C:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+# Header-only build option
+option(ASFMLOGGER_HEADER_ONLY "Build ASFMLogger as header-only library" OFF)
 
-# Find required packages
-find_package(Threads REQUIRED)
-find_package(spdlog CONFIG REQUIRED)
-find_package(GTest CONFIG REQUIRED)
-find_package(ODBC QUIET)  # For SQL Server support
+if(ASFMLOGGER_HEADER_ONLY)
+    message(STATUS "Building ASFMLogger as header-only library")
+    add_library(ASFMLogger INTERFACE)
+    target_include_directories(ASFMLogger INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_compile_definitions(ASFMLogger INTERFACE -DASFMLOGGER_HEADER_ONLY)
+    install(FILES ASFMLogger.hpp ASFMLogger_HeaderOnly.hpp DESTINATION include)
+else()
+    message(STATUS "Building ASFMLogger as compiled library")
+
+    # Use vcpkg for dependency management
+    set(CMAKE_TOOLCHAIN_FILE "C:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+
+    # Find required packages
+    find_package(Threads REQUIRED)
+    find_package(spdlog CONFIG REQUIRED)
+    find_package(GTest CONFIG REQUIRED)
+    find_package(ODBC QUIET)  # For SQL Server support
 
 # Optional packages for enhanced features
 find_package(ODBC QUIET)  # For SQL Server support
