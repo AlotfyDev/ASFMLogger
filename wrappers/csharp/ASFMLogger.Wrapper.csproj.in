@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;netcoreapp3.1;net5.0;net6.0;net7.0</TargetFrameworks>
+    <AssemblyName>ASFMLogger.Wrapper</AssemblyName>
+    <RootNamespace>ASFMLogger.Wrapper</RootNamespace>
+    <Version>@PROJECT_VERSION@</Version>
+    <Authors>ASFMLogger Development Team</Authors>
+    <Company>ASFMLogger</Company>
+    <Description>ASFMLogger C# Wrapper - Enterprise-Grade Logging Framework</Description>
+    <PackageProjectUrl>https://github.com/AlotfyDev/ASFMLogger</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AlotfyDev/ASFMLogger</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>logging;enterprise;multi-language;c++;performance;sql-server;shared-memory</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageOutputPath>$(MSBuildProjectDirectory)/../../packages</PackageOutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>../../bin/csharp/debug</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>../../bin/csharp</OutputPath>
+    <DocumentationFile>../../bin/csharp/ASFMLogger.Wrapper.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="ASFMLogger.cs" Pack="true" PackagePath="lib/$(TargetFramework)" />
+    <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /Y /I \"$(TargetDir)*.dll\" \"@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/csharp/\"" />
+  </Target>
+
+</Project>

@@ -1,0 +1,45 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/ASFMLoggerTargets.cmake")
+
+check_required_components(ASFMLogger)
+
+# Set up import targets
+if(NOT TARGET ASFMLogger::ASFMLogger)
+    add_library(ASFMLogger::ASFMLogger INTERFACE IMPORTED)
+    set_target_properties(ASFMLogger::ASFMLogger PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${PACKAGE_PREFIX_DIR}/include"
+        INTERFACE_LINK_LIBRARIES "Threads::Threads;spdlog::spdlog"
+        INTERFACE_COMPILE_DEFINITIONS "ASFMLOGGER_SPDLOG_ENABLED"
+    )
+
+    if(@ODBC_FOUND@)
+        set_target_properties(ASFMLogger::ASFMLogger PROPERTIES
+            INTERFACE_LINK_LIBRARIES "ASFMLogger::ASFMLogger;odbc32;odbccp32"
+            INTERFACE_COMPILE_DEFINITIONS "ASFMLOGGER_SQL_SERVER_SUPPORT"
+        )
+    endif()
+endif()
+
+# Package variables
+set(ASFMLogger_VERSION "@PROJECT_VERSION@")
+set(ASFMLogger_INCLUDE_DIRS "${PACKAGE_PREFIX_DIR}/include")
+set(ASFMLogger_LIBRARIES "ASFMLogger::ASFMLogger")
+set(ASFMLogger_SPDLOG_ENABLED ON)
+set(ASFMLogger_SQL_SERVER_SUPPORT @ODBC_FOUND@)
+
+# Multi-language wrapper locations
+set(ASFMLogger_PYTHON_WRAPPER "${PACKAGE_PREFIX_DIR}/wrappers/python/asfm_logger.py")
+set(ASFMLogger_CSHARP_WRAPPER "${PACKAGE_PREFIX_DIR}/wrappers/csharp")
+set(ASFMLogger_MQL5_WRAPPER "${PACKAGE_PREFIX_DIR}/wrappers/mql5")
+
+# Feature flags
+set(ASFMLogger_FEATURES "")
+if(ASFMLogger_SPDLOG_ENABLED)
+    list(APPEND ASFMLogger_FEATURES "spdlog")
+endif()
+if(ASFMLogger_SQL_SERVER_SUPPORT)
+    list(APPEND ASFMLogger_FEATURES "sql_server")
+endif()
+list(APPEND ASFMLogger_FEATURES "enhanced_logging" "multi_instance" "importance_framework")
+set(ASFMLogger_FEATURES "${ASFMLogger_FEATURES}")

@@ -13,36 +13,11 @@
 #include <chrono>
 #include <cstdint>
 #include <Windows.h>
+#include "structs/LogDataStructures.hpp"
 
 // Forward declarations for Windows types
 struct _SYSTEMTIME;
 struct tm;
-
-// =====================================================================================
-// CORE ENUMS
-// =====================================================================================
-
-/**
- * @brief Log message types for classification and handling
- */
-enum class LogMessageType : int {
-    TRACE = 0,      ///< Detailed debugging information
-    DEBUG = 1,      ///< Debug information for development
-    INFO = 2,       ///< General information about application flow
-    WARN = 3,       ///< Warning messages for potentially harmful situations
-    ERR = 4,        ///< Error events that might allow application to continue
-    CRITICAL = 5    ///< Critical errors that may cause application termination
-};
-
-/**
- * @brief Message importance levels for persistence and handling decisions
- */
-enum class MessageImportance : int {
-    LOW = 0,        ///< Low importance (debug, trace) - may be evicted
-    MEDIUM = 1,     ///< Medium importance (info) - persisted based on context
-    HIGH = 2,       ///< High importance (warnings) - typically persisted
-    CRITICAL = 3    ///< Critical importance (errors) - always persisted
-};
 
 /**
  * @brief Convert LogMessageType to string representation
@@ -56,7 +31,7 @@ inline std::string LogMessageTypeToString(LogMessageType type) {
         case LogMessageType::INFO: return "INFO";
         case LogMessageType::WARN: return "WARN";
         case LogMessageType::ERR: return "ERROR";
-        case LogMessageType::CRITICAL: return "CRITICAL";
+        case LogMessageType::CRITICAL_LOG: return "CRITICAL";
         default: return "UNKNOWN";
     }
 }
@@ -87,7 +62,7 @@ inline LogMessageType StringToLogMessageType(const std::string& str) {
     if (str == "INFO") return LogMessageType::INFO;
     if (str == "WARN") return LogMessageType::WARN;
     if (str == "ERROR" || str == "ERR") return LogMessageType::ERR;
-    if (str == "CRITICAL") return LogMessageType::CRITICAL;
+    if (str == "CRITICAL") return LogMessageType::CRITICAL_LOG;
     return LogMessageType::TRACE; // Default fallback
 }
 

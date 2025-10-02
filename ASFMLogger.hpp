@@ -268,7 +268,7 @@ public:
         const std::string& log_file_name = "framework.log",
         size_t max_file_size = 10485760, // 10 MB
         size_t max_files = 5,
-        spdlog::level::level_enum log_level = static_cast<spdlog::level::level_enum>(1)
+        spdlog::level::level_enum log_level = spdlog::level::info
     );
 
     // Enhanced configuration with full feature support
@@ -291,6 +291,7 @@ public:
 public:
     // Public constructor and destructor for std::make_shared
     Logger();
+    Logger(const std::string& application_name, const std::string& process_name);
     ~Logger();
 
     // Store the last error message

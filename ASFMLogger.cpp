@@ -18,10 +18,6 @@
 std::string Logger::last_error_; // Define static member
 std::mutex Logger::error_mutex_; // Define static mutex
 
-std::shared_ptr<Logger> Logger::getInstance() {
-    return getInstance("ASFMLogger", "");
-}
-
 std::shared_ptr<Logger> Logger::getInstance(const std::string& application_name,
                                             const std::string& process_name) {
     // C++11 static local variable initialization is thread-safe
@@ -33,7 +29,13 @@ std::shared_ptr<Logger> Logger::getInstance(const std::string& application_name,
 
 
 
-Logger::Logger() : Logger("ASFMLogger", "") {}
+Logger::Logger() : application_name_("ASFMLogger"), process_name_(""),
+    enhanced_features_enabled_(false), database_logging_enabled_(false),
+    shared_memory_enabled_(false), total_messages_processed_(0),
+    database_messages_persisted_(0), shared_memory_messages_sent_(0),
+    queue_overflow_events_(0) {
+    // Default constructor - initialize with defaults
+}
 
 Logger::Logger(const std::string& application_name, const std::string& process_name)
     : application_name_(application_name), process_name_(process_name),
@@ -73,7 +75,7 @@ void Logger::configure(
     size_t max_files,
     spdlog::level::level_enum log_level) {
     // Handle default argument for log_level
-    if (log_level == static_cast<spdlog::level::level_enum>(1)) {
+    if (log_level == spdlog::level::info) {
         log_level = spdlog::level::info;
     }
     if (is_configured_) {

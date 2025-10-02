@@ -1,0 +1,7 @@
+# CMake generation dependency list for this directory.
+C:/cmake-4.1.0-rc4-windows-x86_64/share/cmake-4.1/Modules/FindPackageHandleStandardArgs.cmake
+C:/cmake-4.1.0-rc4-windows-x86_64/share/cmake-4.1/Modules/FindPackageMessage.cmake
+C:/cmake-4.1.0-rc4-windows-x86_64/share/cmake-4.1/Modules/FindPython/Support.cmake
+C:/cmake-4.1.0-rc4-windows-x86_64/share/cmake-4.1/Modules/FindPython3.cmake
+D:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/wrappers/python/CMakeLists.txt
+D:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/wrappers/python/setup.py.in

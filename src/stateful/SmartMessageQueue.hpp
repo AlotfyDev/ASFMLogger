@@ -39,7 +39,7 @@ private:
 
     // Priority preservation
     std::vector<QueueEntryMetadata> preserved_messages_;
-    std::mutex preservation_mutex_;
+    mutable std::mutex preservation_mutex_;
 
     // Batch processing
     std::vector<LogMessageData> current_batch_;

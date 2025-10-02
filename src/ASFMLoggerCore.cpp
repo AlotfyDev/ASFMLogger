@@ -226,7 +226,7 @@ bool LogMessageData::isValid() const {
     return message_id != 0 &&
            process_id != 0 &&
            type >= LogMessageType::TRACE &&
-           type <= LogMessageType::CRITICAL &&
+           type <= LogMessageType::CRITICAL_LOG &&
            strlen(message) > 0;
 }
 

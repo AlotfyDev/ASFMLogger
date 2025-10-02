@@ -6,6 +6,17 @@
  */
 
 #include "../ASFMLogger.hpp"
+#include "../src/structs/LogDataStructures.hpp"
+#include "../src/structs/ImportanceConfiguration.hpp"
+#include "../src/structs/PersistencePolicy.hpp"
+#include "../src/toolbox/LogMessageToolbox.hpp"
+#include "../src/toolbox/LoggerInstanceToolbox.hpp"
+#include "../src/managers/LoggerInstanceManager.hpp"
+#include "../src/stateful/LoggerInstance.hpp"
+#include "../src/stateful/ImportanceMapper.hpp"
+#include "../src/stateful/SmartMessageQueue.hpp"
+#include "../src/stateful/DatabaseLogger.hpp"
+#include "../src/managers/ContextualPersistenceManager.hpp"
 #include <sstream>
 #include <algorithm>
 
@@ -19,7 +30,7 @@ void Logger::initializeEnhancedFeatures() {
         instance_ = LoggerInstance::Create(application_name_, process_name_);
 
         // Register with global instance manager
-        auto& instance_manager = GetGlobalInstanceManager();
+        auto& instance_manager = ::GetGlobalInstanceManager();
         instance_manager.registerInstance(instance_);
 
         // Initialize importance mapper
@@ -101,7 +112,14 @@ void Logger::log(const std::string& level, const std::string& component, const s
         std::string formatted_msg = oss.str();
 
         // Create enhanced log message data
-        LogMessageData message_data(LogMessageType::INFO, formatted_msg, component, function);
+        LogMessageData message_data;
+        strncpy(message_data.message, formatted_msg.c_str(), sizeof(message_data.message) - 1);
+        message_data.message[sizeof(message_data.message) - 1] = '\0';
+        strncpy(message_data.component, component.c_str(), sizeof(message_data.component) - 1);
+        message_data.component[sizeof(message_data.component) - 1] = '\0';
+        strncpy(message_data.function, function.c_str(), sizeof(message_data.function) - 1);
+        message_data.function[sizeof(message_data.function) - 1] = '\0';
+        message_data.type = LogMessageType::INFO;
 
         // Update instance activity
         if (enhanced_features_enabled_) {
@@ -193,9 +211,12 @@ void Logger::routeEnhancedMessage(const LogMessageData& message_data) {
 
         // Determine message importance
         ImportanceResolutionContext context;
-        strcpy_s(context.component, sizeof(context.component), message_data.component);
-        strcpy_s(context.function, sizeof(context.function), message_data.function);
-        strcpy_s(context.application_name, sizeof(context.application_name), application_name_.c_str());
+        strncpy(context.component, message_data.component, sizeof(context.component) - 1);
+        context.component[sizeof(context.component) - 1] = '\0';
+        strncpy(context.function, message_data.function, sizeof(context.function) - 1);
+        context.function[sizeof(context.function) - 1] = '\0';
+        strncpy(context.application_name, application_name_.c_str(), sizeof(context.application_name) - 1);
+        context.application_name[sizeof(context.application_name) - 1] = '\0';
         context.message_type = message_data.type;
 
         auto importance_result = importance_mapper_->resolveMessageImportance(message_data, context);
@@ -219,7 +240,7 @@ void Logger::routeEnhancedMessage(const LogMessageData& message_data) {
                 case LogMessageType::ERR:
                     logger_->error(message_str);
                     break;
-                case LogMessageType::CRITICAL:
+                case LogMessageType::CRITICAL_LOG:
                     logger_->critical(message_str);
                     break;
             }
@@ -228,10 +249,12 @@ void Logger::routeEnhancedMessage(const LogMessageData& message_data) {
         // Route to smart queue for intelligent buffering
         if (smart_queue_) {
             PersistenceDecisionContext persistence_context;
-            strcpy_s(persistence_context.application_name, sizeof(persistence_context.application_name),
-                    application_name_.c_str());
-            strcpy_s(persistence_context.component, sizeof(persistence_context.component),
-                    message_data.component);
+            strncpy(persistence_context.application_name, application_name_.c_str(),
+                    sizeof(persistence_context.application_name) - 1);
+            persistence_context.application_name[sizeof(persistence_context.application_name) - 1] = '\0';
+            strncpy(persistence_context.component, message_data.component,
+                    sizeof(persistence_context.component) - 1);
+            persistence_context.component[sizeof(persistence_context.component) - 1] = '\0';
             persistence_context.message_type = message_data.type;
             persistence_context.resolved_importance = importance_result.final_importance;
 

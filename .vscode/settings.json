@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        ".fantomasignore": "ignore",
+        "*.h": "cpp",
+        "stdexcept": "cpp",
+        "sstream": "cpp",
+        "algorithm": "cpp",
+        "condition_variable": "cpp",
+        "atomic": "cpp",
+        "vector": "cpp",
+        "iostream": "cpp",
+        "unordered_map": "cpp",
+        "cstdint": "cpp",
+        "chrono": "cpp",
+        "deque": "cpp",
+        "queue": "cpp",
+        "thread": "cpp",
+        "string": "cpp"
+    }
+}

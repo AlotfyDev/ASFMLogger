@@ -490,7 +490,7 @@ public:
      * @return Number of active connections
      */
     size_t getActiveConnectionCount() const {
-        std::lock_guard<std::mutex> lock(connection_pool_mutex_);
+        std::lock_guard<std::mutex> lock(const_cast<std::mutex&>(connection_pool_mutex_));
         return active_connections_.size();
     }
 
@@ -499,7 +499,7 @@ public:
      * @return Maximum connections in pool
      */
     size_t getMaxConnections() const {
-        std::lock_guard<std::mutex> lock(connection_pool_mutex_);
+        std::lock_guard<std::mutex> lock(const_cast<std::mutex&>(connection_pool_mutex_));
         return max_connections_;
     }
 

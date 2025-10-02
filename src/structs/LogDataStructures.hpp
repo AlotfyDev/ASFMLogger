@@ -24,7 +24,7 @@ enum LogMessageType : int {
     INFO = 2,       ///< General information about application flow
     WARN = 3,       ///< Warning messages for potentially harmful situations
     ERR = 4,        ///< Error events that might allow application to continue
-    CRITICAL = 5    ///< Critical errors that may cause application termination
+    CRITICAL_LOG = 5    ///< Critical errors that may cause application termination
 };
 
 /**

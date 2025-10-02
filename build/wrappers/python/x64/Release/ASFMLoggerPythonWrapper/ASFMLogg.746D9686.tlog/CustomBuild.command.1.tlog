@@ -1,0 +1,20 @@
+^D:\CPPBRIDGEVSC\ABSTRACTSHAREDFILEMAP\ASFMLOGGER\BUILD\CMAKEFILES\C66C340A440C4CA5E677B1174C2B89C5\ASFMLOGGERPYTHONWRAPPER.RULE
+setlocal
+C:\cmake-4.1.0-rc4-windows-x86_64\bin\cmake.exe -E copy D:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/wrappers/python/asfm_logger.py D:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/build/bin/asfm_logger.py
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\CPPBRIDGEVSC\ABSTRACTSHAREDFILEMAP\ASFMLOGGER\WRAPPERS\PYTHON\CMAKELISTS.TXT
+setlocal
+C:\cmake-4.1.0-rc4-windows-x86_64\bin\cmake.exe -SD:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger -BD:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/build --check-stamp-file D:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/build/wrappers/python/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -1,0 +1,11 @@
+{
+	"InstallScripts" : 
+	[
+		"D:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/build/cmake_install.cmake",
+		"D:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/build/wrappers/cmake_install.cmake",
+		"D:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/build/wrappers/python/cmake_install.cmake",
+		"D:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/build/wrappers/csharp/cmake_install.cmake",
+		"D:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/build/wrappers/mql5/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

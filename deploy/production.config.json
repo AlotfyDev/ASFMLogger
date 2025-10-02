@@ -1,0 +1,101 @@
+{
+  "asfmLogger": {
+    "version": "1.0.0",
+    "buildType": "Release",
+    "features": {
+      "enhancedLogging": true,
+      "multiInstance": true,
+      "importanceFramework": true,
+      "contextualPersistence": true,
+      "smartQueues": true,
+      "databaseIntegration": true,
+      "sharedMemory": true,
+      "realTimeMonitoring": true,
+      "webDashboard": true,
+      "multiLanguageSupport": true
+    },
+    "performance": {
+      "maxQueueSize": 100000,
+      "batchSize": 1000,
+      "flushIntervalMs": 5000,
+      "memoryLimitMB": 100,
+      "cpuThresholdPercent": 80
+    },
+    "database": {
+      "connectionString": "Server=prod-db;Database=ApplicationLogs;Trusted_Connection=True;Connection Timeout=30;",
+      "tableName": "ApplicationLogs",
+      "connectionPoolSize": 10,
+      "commandTimeoutSeconds": 30,
+      "enableConnectionPooling": true,
+      "enableAutoSchemaManagement": true
+    },
+    "monitoring": {
+      "enableHealthChecks": true,
+      "healthCheckIntervalSeconds": 30,
+      "enableMetricsCollection": true,
+      "metricsIntervalSeconds": 60,
+      "enableAlerting": true,
+      "alertThresholds": {
+        "errorRatePercent": 5,
+        "responseTimeMs": 1000,
+        "memoryUsagePercent": 85,
+        "queueSizePercent": 90
+      }
+    },
+    "logging": {
+      "defaultLevel": "INFO",
+      "consoleOutput": true,
+      "fileOutput": true,
+      "filePath": "logs/application.log",
+      "maxFileSizeMB": 100,
+      "maxFiles": 10,
+      "enableRotation": true,
+      "enableCompression": true
+    },
+    "security": {
+      "enableEncryption": false,
+      "enableAccessControl": true,
+      "allowedApplications": [
+        "TradingSystem",
+        "RiskEngine",
+        "ComplianceChecker",
+        "MarketDataFeed"
+      ],
+      "enableAuditTrail": true,
+      "auditRetentionDays": 90
+    },
+    "integration": {
+      "pythonWrapper": {
+        "enabled": true,
+        "installPath": "lib/python3.10/site-packages",
+        "virtualEnvSupport": true
+      },
+      "csharpWrapper": {
+        "enabled": true,
+        "targetFrameworks": ["net6.0", "net7.0", "netstandard2.1"],
+        "nugetPackage": true
+      },
+      "mql5Wrapper": {
+        "enabled": true,
+        "metaTraderPath": "C:/Program Files/MetaTrader 5",
+        "autoInstall": true
+      },
+      "webDashboard": {
+        "enabled": true,
+        "port": 8080,
+        "enableSSL": true,
+        "sslCertificate": "certs/server.crt",
+        "sslPrivateKey": "certs/server.key"
+      }
+    },
+    "deployment": {
+      "environment": "production",
+      "region": "primary",
+      "autoStart": true,
+      "serviceAccount": "ASFMLoggerService",
+      "enableWindowsService": true,
+      "restartPolicy": "always",
+      "healthCheckEndpoint": "http://localhost:8080/api/health"
+    }
+  }
+}

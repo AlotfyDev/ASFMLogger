@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\CppBridgeVSC\AbstractSharedFileMap\ASFMLogger\build\CMakeFiles\c66c340a440c4ca5e677b1174c2b89c5\install_python_package.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\CppBridgeVSC\AbstractSharedFileMap\ASFMLogger\wrappers\python\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\CppBridgeVSC\AbstractSharedFileMap\ASFMLogger\build\wrappers\python\CMakeFiles\install_python_package" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{F7CEFEF8-F7BD-3A72-AA75-F55D7BCBBBF3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

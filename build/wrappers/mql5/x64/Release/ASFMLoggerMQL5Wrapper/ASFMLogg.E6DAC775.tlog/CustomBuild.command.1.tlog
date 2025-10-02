@@ -1,0 +1,22 @@
+^D:\CPPBRIDGEVSC\ABSTRACTSHAREDFILEMAP\ASFMLOGGER\BUILD\CMAKEFILES\67901FD8F3299DB8D4CB91C108882B60\ASFMLOGGERMQL5WRAPPER.RULE
+setlocal
+C:\cmake-4.1.0-rc4-windows-x86_64\bin\cmake.exe -E copy D:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/wrappers/mql5/ASFMLogger.mq5 D:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/build/bin/ASFMLogger.mq5
+if %errorlevel% neq 0 goto :cmEnd
+C:\cmake-4.1.0-rc4-windows-x86_64\bin\cmake.exe -E copy D:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/wrappers/mql5/ASFMLogger.mqh D:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/build/bin/ASFMLogger.mqh
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\CPPBRIDGEVSC\ABSTRACTSHAREDFILEMAP\ASFMLOGGER\WRAPPERS\MQL5\CMAKELISTS.TXT
+setlocal
+C:\cmake-4.1.0-rc4-windows-x86_64\bin\cmake.exe -SD:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger -BD:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/build --check-stamp-file D:/CppBridgeVSC/AbstractSharedFileMap/ASFMLogger/build/wrappers/mql5/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
