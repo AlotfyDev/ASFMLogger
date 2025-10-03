@@ -22,6 +22,10 @@ struct PersistenceDecisionContext;
 struct PersistenceDecisionResult;
 struct PersistenceStatistics;
 struct AdaptivePolicyTrigger;
+struct DatabaseConnection;
+struct DatabaseConnectionPool;
+struct AdvancedMonitoringMetrics;
+struct PerformanceBenchmarkResults;
 
 class ContextualPersistenceToolbox {
 private:
@@ -29,6 +33,7 @@ private:
     static std::unordered_map<std::string, PersistencePolicy> application_policies_;
     static std::unordered_map<std::string, AdaptivePolicyTrigger> adaptive_triggers_;
     static std::unordered_map<std::string, PersistenceStatistics> persistence_stats_;
+
 
 public:
     // =================================================================================
@@ -451,6 +456,150 @@ private:
     static void InitializeDefaultPolicies();
     static bool IsInitialized();
     static std::string GeneratePolicyId();
+
+    // Persistence implementation methods
+    static bool PerformPersistence(const LogMessageData& message,
+                                  const std::string& method,
+                                  const PersistenceDecisionContext& context);
+    static bool PersistToFile(const LogMessageData& message,
+                             const PersistenceDecisionContext& context);
+    static bool PersistToDatabase(const LogMessageData& message,
+                                 const PersistenceDecisionContext& context);
+    static bool PersistToSharedMemory(const LogMessageData& message,
+                                     const PersistenceDecisionContext& context);
+
+    // Configuration file I/O methods
+    static std::unordered_map<std::string, std::string> ParseSimpleJson(const std::string& json_content);
+    static std::string GeneratePoliciesJson();
+    static bool ProcessConfigurationFromMap(const std::unordered_map<std::string, std::string>& config_map);
+
+    // Utility methods
+    static std::string GetSeverityString(LogMessageType message_type, const SeverityMappingConfiguration& config);
+    static std::string GetSeverityString(LogMessageType message_type); // Backward compatibility overload
+
+    // =================================================================================
+    // DATABASE CONNECTION POOLING
+    // =================================================================================
+
+    /**
+     * @brief Initialize database connection pool
+     * @param server_name Database server name
+     * @param database_name Database name
+     * @param max_connections Maximum number of connections to maintain
+     * @return true if pool initialized successfully
+     */
+    static bool InitializeConnectionPool(const std::string& server_name,
+                                       const std::string& database_name,
+                                       size_t max_connections = 10);
+
+    /**
+     * @brief Get connection from pool or create new one
+     * @param context Context containing database configuration
+     * @return Database connection or nullptr if failed
+     */
+    static DatabaseConnection* AcquireDatabaseConnection(const PersistenceDecisionContext& context);
+
+    /**
+     * @brief Return connection to pool
+     * @param connection Connection to return
+     */
+    static void ReleaseDatabaseConnection(DatabaseConnection* connection);
+
+    /**
+     * @brief Cleanup idle connections in pool
+     * @return Number of connections cleaned up
+     */
+    static size_t CleanupIdleConnections();
+
+    /**
+     * @brief Get connection pool statistics
+     * @return Pool statistics as formatted string
+     */
+    static std::string GetConnectionPoolStatistics();
+
+    // =================================================================================
+    // ADVANCED MONITORING AND ANALYTICS
+    // =================================================================================
+
+    /**
+     * @brief Initialize advanced monitoring system
+     * @param collection_interval_seconds How often to collect metrics
+     * @return true if monitoring initialized successfully
+     */
+    static bool InitializeAdvancedMonitoring(DWORD collection_interval_seconds = 30);
+
+    /**
+     * @brief Update advanced monitoring metrics
+     * @param operation_time_ms Time taken for the operation
+     * @param success Whether operation was successful
+     */
+    static void UpdateMonitoringMetrics(DWORD operation_time_ms, bool success);
+
+    /**
+     * @brief Get current advanced monitoring metrics
+     * @return Current monitoring metrics
+     */
+    static AdvancedMonitoringMetrics GetAdvancedMonitoringMetrics();
+
+    /**
+     * @brief Analyze system performance trends
+     * @param time_window_seconds Time window for analysis
+     * @return Performance analysis as formatted string
+     */
+    static std::string AnalyzePerformanceTrends(DWORD time_window_seconds = 300);
+
+    /**
+     * @brief Get real-time system health status
+     * @return Health status as formatted string
+     */
+    static std::string GetSystemHealthStatus();
+
+    // =================================================================================
+    // PERFORMANCE BENCHMARKING
+    // =================================================================================
+
+    /**
+     * @brief Run comprehensive performance benchmark
+     * @param test_duration_seconds How long to run the test
+     * @param concurrent_threads Number of concurrent threads to use
+     * @param message_count Number of messages to process
+     * @return Benchmark results
+     */
+    static PerformanceBenchmarkResults RunPerformanceBenchmark(DWORD test_duration_seconds = 60,
+                                                             DWORD concurrent_threads = 4,
+                                                             DWORD message_count = 10000);
+
+    /**
+     * @brief Run database performance benchmark
+     * @param context Database context for testing
+     * @param test_duration_seconds Test duration
+     * @return Database-specific benchmark results
+     */
+    static PerformanceBenchmarkResults RunDatabaseBenchmark(const PersistenceDecisionContext& context,
+                                                          DWORD test_duration_seconds = 30);
+
+    /**
+     * @brief Run memory and CPU efficiency benchmark
+     * @param test_duration_seconds Test duration
+     * @return Resource efficiency benchmark results
+     */
+    static PerformanceBenchmarkResults RunResourceBenchmark(DWORD test_duration_seconds = 30);
+
+    /**
+     * @brief Generate comprehensive performance report
+     * @param benchmark_results Results from benchmark tests
+     * @return Detailed performance report
+     */
+    static std::string GeneratePerformanceReport(const std::vector<PerformanceBenchmarkResults>& benchmark_results);
+
+    /**
+     * @brief Compare performance between different configurations
+     * @param baseline_results Baseline benchmark results
+     * @param comparison_results Results to compare against baseline
+     * @return Comparison analysis as formatted string
+     */
+    static std::string ComparePerformanceConfigurations(const PerformanceBenchmarkResults& baseline_results,
+                                                       const PerformanceBenchmarkResults& comparison_results);
 };
 
 #endif // __ASFM_LOGGER_CONTEXTUAL_PERSISTENCE_TOOLBOX_HPP__

@@ -9,8 +9,8 @@
  */
 
 #include "structs/LogDataStructures.hpp"
+#include "structs/DatabaseConfiguration.hpp"
 #include <cstdint>
-#include <chrono>
 
 // =====================================================================================
 // PERSISTENCE POLICY DATA STRUCTURES
@@ -99,6 +99,11 @@ struct PersistenceDecisionContext {
     char function[128];                        ///< Function that generated the message
     MessageImportance resolved_importance;     ///< Importance resolved by importance framework
 
+    // Process context
+    char process_name[256];                    ///< Name of the process generating messages
+    DWORD process_id;                          ///< Windows process ID
+    DWORD thread_id;                           ///< Windows thread ID
+
     // System conditions
     bool is_high_load;                         ///< Whether system is under high load
     bool is_emergency_mode;                    ///< Whether system is in emergency mode
@@ -110,6 +115,12 @@ struct PersistenceDecisionContext {
     DWORD queue_processing_time_ms;            ///< Average queue processing time
     DWORD database_response_time_ms;           ///< Database response time
     bool database_is_available;                ///< Whether database is accessible
+
+    // Database configuration context
+    DatabaseConnectionConfig database_config;  ///< Database connection configuration
+
+    // Severity mapping configuration
+    SeverityMappingConfiguration severity_mapping;  ///< Configurable severity string mapping
 
     // Future extensibility
     char reserved[256];                        ///< Reserved for future use
@@ -215,6 +226,135 @@ struct AdaptivePolicyTrigger {
     // Trigger state
     bool is_enabled;                           ///< Whether trigger is currently enabled
     DWORD activation_count;                    ///< Number of times trigger has activated
+
+    // Future extensibility
+    char reserved[256];                        ///< Reserved for future use
+};
+
+/**
+ * @brief POD structure for configurable severity mapping
+ * Allows customization of severity string representations for different message types
+ */
+struct SeverityMappingConfiguration {
+    char trace_severity[16];                   ///< String representation for TRACE messages
+    char debug_severity[16];                   ///< String representation for DEBUG messages
+    char info_severity[16];                    ///< String representation for INFO messages
+    char warn_severity[16];                    ///< String representation for WARN messages
+    char error_severity[16];                   ///< String representation for ERROR messages
+    char critical_severity[16];                ///< String representation for CRITICAL messages
+
+    // Configuration metadata
+    DWORD created_time;                        ///< When mapping was created
+    char created_by[128];                      ///< Who created this mapping
+    bool is_active;                            ///< Whether this mapping is currently active
+
+    // Future extensibility
+    char reserved[256];                        ///< Reserved for future use
+};
+
+/**
+ * @brief POD structure for database connection information
+ * Used by connection pool for efficient database access
+ */
+struct DatabaseConnection {
+    SQLHDBC hdbc;                              ///< ODBC database connection handle
+    DWORD last_used_time;                      ///< When connection was last used
+    bool is_in_use;                            ///< Whether connection is currently active
+    DWORD connection_id;                       ///< Unique connection identifier
+    char connection_string[512];               ///< Connection string used
+
+    // Future extensibility
+    char reserved[256];                        ///< Reserved for future use
+};
+
+/**
+ * @brief POD structure for database connection pool configuration
+ * Manages pool of database connections for optimal performance
+ */
+struct DatabaseConnectionPool {
+    DatabaseConnection connections[20];        ///< Pool of database connections (max 20)
+    size_t pool_size;                          ///< Current number of connections in pool
+    size_t max_pool_size;                      ///< Maximum allowed connections
+    DWORD connection_timeout_ms;               ///< Connection timeout in milliseconds
+    DWORD max_connection_idle_time_ms;         ///< Max idle time before connection cleanup
+    bool is_initialized;                       ///< Whether pool has been initialized
+
+    // Pool statistics
+    DWORD total_connections_created;           ///< Total connections ever created
+    DWORD total_connections_reused;            ///< Total connections reused from pool
+    DWORD total_connection_timeouts;           ///< Total connection timeouts
+
+    // Future extensibility
+    char reserved[256];                        ///< Reserved for future use
+};
+
+/**
+ * @brief POD structure for advanced monitoring metrics
+ * Tracks detailed performance and health metrics
+ */
+struct AdvancedMonitoringMetrics {
+    // Performance metrics
+    DWORD average_response_time_ms;            ///< Average response time for operations
+    DWORD p95_response_time_ms;                ///< 95th percentile response time
+    DWORD p99_response_time_ms;                ///< 99th percentile response time
+    DWORD requests_per_second;                 ///< Current requests per second
+
+    // Error tracking
+    DWORD total_errors;                        ///< Total errors encountered
+    DWORD errors_per_minute;                   ///< Current errors per minute
+    double error_rate_percentage;              ///< Current error rate as percentage
+
+    // Resource utilization
+    DWORD memory_usage_mb;                     ///< Current memory usage in MB
+    DWORD cpu_usage_percentage;                ///< Current CPU usage percentage
+    DWORD active_threads;                      ///< Number of active threads
+
+    // Queue metrics
+    DWORD queue_size;                          ///< Current queue size
+    DWORD queue_processing_rate;               ///< Messages processed per second
+    DWORD average_queue_wait_time_ms;          ///< Average time messages wait in queue
+
+    // Collection metadata
+    DWORD metrics_start_time;                  ///< When metrics collection started
+    DWORD last_updated_time;                   ///< When metrics were last updated
+    DWORD collection_interval_seconds;         ///< How often to collect metrics
+
+    // Future extensibility
+    char reserved[256];                        ///< Reserved for future use
+};
+
+/**
+ * @brief POD structure for performance benchmarking results
+ * Stores results of performance tests and benchmarks
+ */
+struct PerformanceBenchmarkResults {
+    char benchmark_name[128];                  ///< Name of the benchmark test
+    DWORD test_duration_seconds;               ///< How long the test ran
+
+    // Throughput metrics
+    DWORD total_operations;                    ///< Total operations performed
+    DWORD operations_per_second;               ///< Operations completed per second
+    DWORD average_latency_ms;                  ///< Average latency per operation
+
+    // Resource usage during test
+    DWORD peak_memory_usage_mb;                ///< Peak memory usage during test
+    DWORD average_cpu_usage;                   ///< Average CPU usage during test
+    DWORD peak_cpu_usage;                      ///< Peak CPU usage during test
+
+    // Quality metrics
+    DWORD total_errors;                        ///< Errors encountered during test
+    double error_rate_percentage;              ///< Error rate as percentage
+    double success_rate_percentage;            ///< Success rate as percentage
+
+    // Test configuration
+    DWORD concurrent_threads;                  ///< Number of concurrent threads used
+    DWORD message_batch_size;                  ///< Size of message batches
+    char test_scenario[128];                   ///< Description of test scenario
+
+    // Timing details
+    DWORD test_start_time;                     ///< When test started
+    DWORD test_end_time;                       ///< When test completed
+    char tested_by[128];                       ///< Who ran the benchmark
 
     // Future extensibility
     char reserved[256];                        ///< Reserved for future use
