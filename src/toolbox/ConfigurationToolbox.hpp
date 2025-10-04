@@ -13,7 +13,11 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <nlohmann/json.hpp>  // For JSON parsing
+
+// Optional JSON support - only include if available
+#ifdef ASFMLOGGER_JSON_SUPPORT
+#include <nlohmann/json.hpp>
+#endif
 
 // Forward declarations
 struct ASFMLoggerConfiguration;
@@ -503,15 +507,19 @@ public:
 
 private:
     // Private helper methods
-    static nlohmann::json ParseJsonConfig(const std::string& json_config);
-    static ASFMLoggerConfiguration JsonToConfiguration(const nlohmann::json& json_config);
-    static nlohmann::json ConfigurationToJson(const ASFMLoggerConfiguration& config);
     static std::string GetEnvironmentVariable(const std::string& variable_name);
     static bool SetEnvironmentVariable(const std::string& variable_name, const std::string& value);
     static std::vector<std::string> ParseCommandLineArgument(const std::string& arg);
     static void InitializeDefaultTemplates();
     static bool IsInitialized();
     static std::string SanitizeConfigurationValue(const std::string& value, const std::string& field_name);
+
+// Optional JSON support methods
+#ifdef ASFMLOGGER_JSON_SUPPORT
+    static nlohmann::json ParseJsonConfig(const std::string& json_config);
+    static ASFMLoggerConfiguration JsonToConfiguration(const nlohmann::json& json_config);
+    static nlohmann::json ConfigurationToJson(const ASFMLoggerConfiguration& config);
+#endif
 };
 
 #endif // __ASFM_LOGGER_CONFIGURATION_TOOLBOX_HPP__

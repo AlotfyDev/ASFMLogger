@@ -10,6 +10,8 @@
 
 #include "structs/LogDataStructures.hpp"
 #include "structs/MonitoringData.hpp"
+#include "structs/SmartQueueConfiguration.hpp"
+#include "structs/DatabaseConfiguration.hpp"
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -17,13 +19,6 @@
 
 // Forward declarations
 struct LogMessageData;
-struct SystemPerformanceMetrics;
-struct LoggingSystemHealth;
-struct AdaptiveBehaviorTrigger;
-struct SystemAdaptationRecord;
-struct ComprehensiveLoggingStatistics;
-struct PerformanceTrendAnalysis;
-struct MonitoringAlertConfiguration;
 
 class MonitoringToolbox {
 private:
@@ -572,13 +567,19 @@ public:
 
 private:
     // Private helper methods
+    static uint32_t GenerateCollectionId();
+    static uint32_t GenerateHealthCheckId();
+    static uint32_t GenerateStatisticsId();
+    static uint32_t GenerateAnalysisId();
+    static uint32_t GenerateAdaptationId();
+    static std::string FormatTimestamp(DWORD timestamp);
     static void CollectWindowsPerformanceMetrics(SystemPerformanceMetrics& metrics);
     static void CollectLoggingSystemMetrics(LoggingSystemHealth& health);
     static void CollectApplicationMetrics(const std::string& application_name,
-                                         ComprehensiveLoggingStatistics& stats);
+                                        ComprehensiveLoggingStatistics& stats);
     static double CalculateTrendSlope(const std::vector<double>& values);
     static std::vector<double> ExtractMetricValues(const std::vector<SystemPerformanceMetrics>& metrics,
-                                                  const std::string& metric_name);
+                                                   const std::string& metric_name);
     static bool IsAnomalousValue(double value, double mean, double standard_deviation, double threshold);
     static void InitializeDefaultThresholds();
     static bool IsInitialized();

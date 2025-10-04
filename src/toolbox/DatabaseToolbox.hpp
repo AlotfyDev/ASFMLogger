@@ -16,12 +16,6 @@
 
 // Forward declarations
 struct LogMessageData;
-struct DatabaseConnectionConfig;
-struct DatabaseConnectionState;
-struct DatabaseOperationResult;
-struct DatabaseTransactionInfo;
-struct DatabaseSchemaInfo;
-struct DatabaseQueryPlan;
 
 class DatabaseToolbox {
 private:
@@ -34,6 +28,12 @@ public:
     // =================================================================================
     // CONNECTION MANAGEMENT
     // =================================================================================
+
+    /**
+     * @brief Generate unique connection identifier
+     * @return Unique connection ID
+     */
+    static uint32_t GenerateConnectionId();
 
     /**
      * @brief Create database connection configuration
@@ -566,6 +566,29 @@ public:
      * @return Current timestamp
      */
     static DWORD GetCurrentTimestamp();
+
+public:
+    // =================================================================================
+    // PUBLIC HELPER METHODS
+    // =================================================================================
+
+    /**
+     * @brief Generate unique operation identifier
+     * @return Unique operation ID
+     */
+    static uint32_t GenerateOperationId();
+
+    /**
+     * @brief Generate unique schema identifier
+     * @return Unique schema ID
+     */
+    static uint32_t GenerateSchemaId();
+
+    /**
+     * @brief Generate unique plan identifier
+     * @return Unique plan ID
+     */
+    static uint32_t GeneratePlanId();
 
 private:
     // Private helper methods

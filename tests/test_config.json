@@ -1,0 +1,24 @@
+{
+  "test_framework": {
+    "gtest_version": "1.12.0",
+    "thread_safety": true,
+    "performance_test": true
+  },
+  "performance": {
+    "max_iterations": 10000,
+    "timeout_seconds": 60,
+    "memory_limit_mb": 512
+  },
+  "logging": {
+    "log_level": "info",
+    "console_output": true,
+    "file_output": false
+  },
+  "components": {
+    "logmessage": true,
+    "loggerinstance": false,
+    "importance_mapper": false,
+    "smart_message_queue": false,
+    "database_logger": false
+  }
+}

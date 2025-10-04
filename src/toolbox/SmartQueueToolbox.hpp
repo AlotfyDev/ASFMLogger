@@ -19,12 +19,6 @@
 
 // Forward declarations
 struct LogMessageData;
-struct SmartQueueConfiguration;
-struct SmartQueueStatistics;
-struct QueueEntryMetadata;
-struct QueueEvictionDecision;
-struct QueueBatch;
-struct PersistenceDecisionContext;
 
 class SmartQueueToolbox {
 private:
@@ -500,16 +494,86 @@ public:
      */
     static DWORD GetCurrentTimestamp();
 
-private:
-    // Private helper methods
+public:
+    // =================================================================================
+    // PUBLIC HELPER METHODS
+    // =================================================================================
+
+    /**
+     * @brief Generate unique queue identifier
+     * @return Unique queue ID
+     */
+    static uint32_t GenerateQueueId();
+
+    /**
+     * @brief Generate unique batch identifier
+     * @return Unique batch ID
+     */
+    static uint32_t GenerateBatchId();
+
+    /**
+     * @brief Calculate age of a queue entry
+     * @param entry Queue entry to check
+     * @param current_time Current timestamp
+     * @return Age in seconds
+     */
     static DWORD CalculateMessageAge(const QueueEntryMetadata& entry, DWORD current_time);
+
+    /**
+     * @brief Compare two queue entries by priority
+     * @param a First entry
+     * @param b Second entry
+     * @return true if a has higher priority than b
+     */
     static bool ComparePriority(const std::pair<LogMessageData, QueueEntryMetadata>& a,
                                const std::pair<LogMessageData, QueueEntryMetadata>& b);
+
+    /**
+     * @brief Compare two queue entries by age
+     * @param a First entry
+     * @param b Second entry
+     * @param current_time Current timestamp
+     * @return true if a is older than b
+     */
     static bool CompareAge(const std::pair<LogMessageData, QueueEntryMetadata>& a,
                           const std::pair<LogMessageData, QueueEntryMetadata>& b,
                           DWORD current_time);
+
+    /**
+     * @brief Compare two messages for equality
+     * @param a First message
+     * @param b Second message
+     * @return true if messages are identical
+     */
+    static bool CompareMessages(const LogMessageData& a, const LogMessageData& b);
+
+    /**
+     * @brief Convert deque to vector for ToolBox operations
+     * @param deque_container Source deque container
+     * @return Vector container with same contents
+     */
+    static std::vector<std::pair<LogMessageData, QueueEntryMetadata>> DequeToVector(
+        const std::deque<std::pair<LogMessageData, QueueEntryMetadata>>& deque_container);
+
+    /**
+     * @brief Convert vector to deque for stateful operations
+     * @param vector_container Source vector container
+     * @return Deque container with same contents
+     */
+    static std::deque<std::pair<LogMessageData, QueueEntryMetadata>> VectorToDeque(
+        const std::vector<std::pair<LogMessageData, QueueEntryMetadata>>& vector_container);
+
+    /**
+     * @brief Estimate optimal batch size
+     * @param candidates Messages to batch
+     * @param max_size Maximum batch size
+     * @return Estimated optimal batch size
+     */
     static size_t EstimateBatchSize(const std::vector<std::pair<LogMessageData, QueueEntryMetadata>>& candidates,
                                    size_t max_size);
+
+private:
+    // Private helper methods
     static void InitializeDefaultConfigurations();
     static bool IsInitialized();
 };

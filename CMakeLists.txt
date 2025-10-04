@@ -1,214 +1,186 @@
 cmake_minimum_required(VERSION 3.20)
-project(ASFMLogger VERSION 1.0.0 LANGUAGES CXX)
+project(ASFMLogger VERSION 1.0.0
+    DESCRIPTION "Advanced Scalable Fault-tolerant Multi-language Logger"
+    LANGUAGES CXX C
+)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Output directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+# Build options
+option(ASFMLOGGER_HEADER_ONLY "Build header-only library" OFF)
+option(ASFMLOGGER_BUILD_TESTS "Build unit tests" ON)
+option(ASFMLOGGER_BUILD_BENCHMARKS "Build benchmark tests" ON)
+option(ASFMLOGGER_USE_LOCAL_DEPS "Use local dependencies instead of vcpkg" OFF)
 
-# Header-only build option
-option(ASFMLOGGER_HEADER_ONLY "Build ASFMLogger as header-only library" OFF)
-
-if(ASFMLOGGER_HEADER_ONLY)
-    message(STATUS "Building ASFMLogger as header-only library")
-    add_library(ASFMLogger INTERFACE)
-    target_include_directories(ASFMLogger INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_compile_definitions(ASFMLogger INTERFACE -DASFMLOGGER_HEADER_ONLY)
-    install(FILES ASFMLogger.hpp ASFMLogger_HeaderOnly.hpp DESTINATION include)
-else()
-    message(STATUS "Building ASFMLogger as compiled library")
-
-    # Use vcpkg for dependency management
-    set(CMAKE_TOOLCHAIN_FILE "C:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-
-    # Find required packages
-    find_package(Threads REQUIRED)
-    find_package(spdlog CONFIG REQUIRED)
-    find_package(GTest CONFIG REQUIRED)
-    find_package(ODBC QUIET)  # For SQL Server support
-
-# Optional packages for enhanced features
-find_package(ODBC QUIET)  # For SQL Server support
-
-# Compiler flags
-if(MSVC)
-    add_compile_options(/W4 /permissive- /utf-8)
-    add_definitions(-D_WIN32_WINNT=0x0A00)  # Windows 10
-else()
-    add_compile_options(-Wall -Wextra -Wpedantic)
+# Configure vcpkg if not using local deps
+if(NOT ASFMLOGGER_USE_LOCAL_DEPS)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
 endif()
-
-# Enable testing
-enable_testing()
-
-# Source directories
-set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-set(TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-
-# Collect source files
-file(GLOB_RECURSE CORE_SOURCES
-    "${SRC_DIR}/*.cpp"
-    "${SRC_DIR}/*.hpp"
-)
-
-file(GLOB_RECURSE STRUCT_SOURCES
-    "${SRC_DIR}/structs/*.hpp"
-)
-
-file(GLOB_RECURSE TOOLBOX_SOURCES
-    "${SRC_DIR}/toolbox/*.hpp"
-    "${SRC_DIR}/toolbox/*.cpp"
-)
-
-file(GLOB_RECURSE STATEFUL_SOURCES
-    "${SRC_DIR}/stateful/*.hpp"
-    "${SRC_DIR}/stateful/*.cpp"
-)
-
-file(GLOB_RECURSE MANAGER_SOURCES
-    "${SRC_DIR}/managers/*.hpp"
-    "${SRC_DIR}/managers/*.cpp"
-)
-
-file(GLOB_RECURSE ENHANCED_SOURCES
-    "${SRC_DIR}/enhanced/*.cpp"
-    "${SRC_DIR}/enhanced/*.hpp"
-)
-
-file(GLOB_RECURSE UTILS_SOURCES
-    "${SRC_DIR}/utils/*.hpp"
-    "${SRC_DIR}/utils/*.cpp"
-)
-
-file(GLOB_RECURSE WEB_SOURCES
-    "${SRC_DIR}/web/*.hpp"
-    "${SRC_DIR}/web/*.cpp"
-)
-
-# Main library target
-add_library(ASFMLogger SHARED
-    ASFMLogger.cpp
-    ASFMLogger.hpp
-    ${CORE_SOURCES}
-    ${STRUCT_SOURCES}
-    ${TOOLBOX_SOURCES}
-    ${STATEFUL_SOURCES}
-    ${MANAGER_SOURCES}
-    ${ENHANCED_SOURCES}
-    ${UTILS_SOURCES}
-    ${WEB_SOURCES}
-)
 
 # Include directories
-target_include_directories(ASFMLogger PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${SRC_DIR}
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+# Source files
+set(CORE_SOURCES
+    src/core/ASFMLogger.cpp
 )
 
-# Link libraries
-target_link_libraries(ASFMLogger
-    Threads::Threads
-    spdlog::spdlog
+set(STATEFUL_SOURCES
+    src/stateful/DatabaseLogger.cpp
+    src/stateful/ImportanceMapper.cpp
+    src/stateful/LoggerInstance.cpp
+    src/stateful/LogMessage.cpp
+    src/stateful/SmartMessageQueue.cpp
 )
 
-# Compile definitions
-target_compile_definitions(ASFMLogger PRIVATE
-    -DASFMLOGGER_SPDLOG_ENABLED
+set(ENHANCED_SOURCES
+    src/enhanced/ASFMLoggerEnhanced.cpp
 )
 
-if(ODBC_FOUND)
-    target_link_libraries(ASFMLogger ${ODBC_LIBRARIES})
-    target_compile_definitions(ASFMLogger PRIVATE -DASFMLOGGER_SQL_SERVER_SUPPORT)
-endif()
-
-# Set target properties
-set_target_properties(ASFMLogger PROPERTIES
-    VERSION ${PROJECT_VERSION}
-    SOVERSION ${PROJECT_VERSION_MAJOR}
-    OUTPUT_NAME "ASFMLogger"
-)
-
-# Platform-specific settings
-if(WIN32)
-    target_compile_definitions(ASFMLogger PRIVATE
-        -D_WIN32
-        -DASFMLOGGER_WINDOWS
-        -DNOMINMAX
-        -DWIN32_LEAN_AND_MEAN
+# Define libraries
+if(ASFMLOGGER_HEADER_ONLY)
+    # Header-only library
+    add_library(ASFMLogger INTERFACE)
+    target_include_directories(ASFMLogger INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+    )
+else()
+    # Static and shared libraries
+    add_library(ASFMLogger ${CORE_SOURCES})
+    target_include_directories(ASFMLogger PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
     )
 
-    # Windows-specific libraries
-    target_link_libraries(ASFMLogger
-        odbc32
-        odbccp32
+    add_library(ASFMLoggerEnhanced ${CORE_SOURCES} ${STATEFUL_SOURCES} ${ENHANCED_SOURCES})
+    target_include_directories(ASFMLoggerEnhanced PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+    )
+
+    # Find dependencies
+    find_package(nlohmann_json CONFIG REQUIRED)
+    find_package(spdlog CONFIG REQUIRED)
+    find_package(fmt CONFIG REQUIRED)
+
+    target_link_libraries(ASFMLogger PUBLIC
+        nlohmann_json::nlohmann_json
+        spdlog::spdlog
+        fmt::fmt
+    )
+
+    target_link_libraries(ASFMLoggerEnhanced PRIVATE
+        ASFMLogger
+        nlohmann_json::nlohmann_json
+        spdlog::spdlog
+        fmt::fmt
     )
 endif()
 
-# Installation
-install(TARGETS ASFMLogger
-    RUNTIME DESTINATION bin
+# Tests
+if(ASFMLOGGER_BUILD_TESTS)
+    enable_testing()
+
+    # Core unit tests
+    set(CORE_TEST_SOURCES
+        tests/unit/core/unit_test_logmessage.cpp
+        tests/unit/core/unit_test_loggerinstance.cpp
+        tests/unit/core/unit_test_importance_mapper.cpp
+        tests/unit/core/unit_test_database_logger.cpp
+        tests/unit/core/unit_test_smart_message_queue.cpp
+    )
+
+    # Integration tests
+    set(INTEGRATION_TEST_SOURCES
+        tests/integration/simple_stateful_test.cpp
+        tests/integration/integration_test.cpp
+        tests/integration/test_integration_testing.cpp
+        tests/integration/test_stateful_layer.cpp
+    )
+
+    # Test executables
+    add_executable(ASFMLoggerTests ${CORE_TEST_SOURCES} tests/test_main.cpp)
+    add_executable(ASFMLoggerIntegrationTests ${CORE_TEST_SOURCES} ${INTEGRATION_TEST_SOURCES} tests/test_main.cpp)
+
+    # Link tests
+    target_link_libraries(ASFMLoggerTests PRIVATE ASFMLoggerEnhanced GTest::gtest_main)
+    target_link_libraries(ASFMLoggerIntegrationTests PRIVATE ASFMLoggerEnhanced GTest::gtest_main)
+
+    # Register tests
+    add_test(NAME CoreTests COMMAND ASFMLoggerTests)
+    add_test(NAME IntegrationTests COMMAND ASFMLoggerIntegrationTests)
+endif()
+
+# Benchmarks
+if(ASFMLOGGER_BUILD_BENCHMARKS)
+    find_package(benchmark CONFIG QUIET)
+    if(benchmark_FOUND)
+        set(BENCHMARK_SOURCES
+            tests/benchmarks/benchmark_main.cpp
+            tests/benchmarks/benchmark_logmessage.cpp
+            tests/benchmarks/benchmark_loggerinstance.cpp
+            tests/benchmarks/benchmark_importance_mapper.cpp
+            tests/benchmarks/benchmark_smart_message_queue.cpp
+            tests/benchmarks/benchmark_database_logger.cpp
+            tests/benchmarks/benchmark_infrastructure.cpp
+        )
+
+        add_executable(ASFMLoggerBenchmarks ${BENCHMARK_SOURCES})
+        target_link_libraries(ASFMLoggerBenchmarks PRIVATE ASFMLoggerEnhanced benchmark::benchmark_main)
+    else()
+        message(WARNING "Google Benchmark not found - benchmarks disabled")
+    endif()
+endif()
+
+# Examples
+set(EXAMPLE_SOURCES
+    examples/built_library_example.cpp
+    examples/simple_working_example.cpp
+    examples/header_only_example.cpp
+    examples/test_header_only.cpp
+)
+
+foreach(example_file ${EXAMPLE_SOURCES})
+    get_filename_component(example_name ${example_file} NAME_WE)
+    add_executable(${example_name} ${example_file})
+    target_link_libraries(${example_name} PRIVATE ASFMLoggerEnhanced)
+endforeach()
+
+# Install targets
+install(TARGETS ASFMLogger ASFMLoggerEnhanced
+    EXPORT ASFMLoggerTargets
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+    INCLUDES DESTINATION include
 )
 
-install(FILES ASFMLogger.hpp DESTINATION include)
+install(DIRECTORY include/ DESTINATION include/)
+
+# Export
+install(EXPORT ASFMLoggerTargets
+    FILE ASFMLoggerTargets.cmake
+    NAMESPACE ASFMLogger::
+    DESTINATION lib/cmake/ASFMLogger
+)
 
 # Package configuration
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/ASFMLoggerConfigVersion.cmake"
-    VERSION ${PROJECT_VERSION}
+    "cmake/ASFMLoggerConfigVersion.cmake"
+    VERSION ${ASFMLogger_VERSION}
     COMPATIBILITY AnyNewerVersion
 )
 
 configure_package_config_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/ASFMLoggerConfig.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/ASFMLoggerConfig.cmake"
+    "cmake/ASFMLoggerConfig.cmake.in"
+    "cmake/ASFMLoggerConfig.cmake"
     INSTALL_DESTINATION lib/cmake/ASFMLogger
+    PATH_VARS
+        CMAKE_INSTALL_INCLUDEDIR
 )
-
-install(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/ASFMLoggerConfig.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/ASFMLoggerConfigVersion.cmake"
-    DESTINATION lib/cmake/ASFMLogger
-)
-
-# Subdirectories
-if(EXISTS "${TEST_DIR}")
-    add_subdirectory(tests)
-endif()
-
-# Examples
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/examples")
-    add_subdirectory(examples)
-endif()
-
-# Documentation (no CMakeLists.txt needed for docs)
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/docs")
-    message(STATUS "Documentation directory found - install manually if needed")
-endif()
-
-# Wrappers
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/wrappers")
-    add_subdirectory(wrappers)
-endif()
-
-# Print configuration summary
-message(STATUS "ASFMLogger Configuration Summary:")
-message(STATUS "  Version: ${PROJECT_VERSION}")
-message(STATUS "  C++ Standard: ${CMAKE_CXX_STANDARD}")
-message(STATUS "  Build Type: ${CMAKE_BUILD_TYPE}")
-message(STATUS "  spdlog: Found via vcpkg")
-message(STATUS "  GTest: Found via vcpkg")
-message(STATUS "  SQL Server Support: ${ODBC_FOUND}")
-message(STATUS "  Install Prefix: ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "  Build Tests: ON")
-message(STATUS "  Multi-language Support: Python, C#, MQL5")
-message(STATUS "  Platform: ${CMAKE_SYSTEM_NAME}")
-message(STATUS "  Compiler: ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
-endif()

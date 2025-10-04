@@ -1,0 +1,272 @@
+Package: vcpkg-cmake-config
+Version: 2024-05-23
+Architecture: x64-windows
+Multi-Arch: same
+Abi: f88815850190c0a2c0031137ace4b0a71662c5fb03e23f94eb9a91a7dd4fba95
+Status: install ok installed
+
+Package: vcpkg-cmake
+Version: 2024-04-23
+Architecture: x64-windows
+Multi-Arch: same
+Abi: aefc6803ed4513f6427fe5261cedd7ce81f9ab013bedb2df63506716df1573cc
+Status: install ok installed
+
+Package: benchmark
+Version: 1.9.4
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 3d7785c2ebd21c7715fd2f995f5999cc28e7009b03f04278c6fe639062cc8797
+Description: A library to benchmark code snippets, similar to unit tests.
+Status: install ok installed
+
+Package: zlib
+Version: 1.3.1
+Depends: vcpkg-cmake
+Architecture: x64-windows
+Multi-Arch: same
+Abi: f47eda02e27cfbd569979652149d20a741c1064e7234258f9ead3e8034fdeb9d
+Description: A compression library
+Status: install ok installed
+
+Package: brotli
+Version: 1.1.0
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 7469e8347a5e8fceb5bda49503c6db5285e5abd45673910263c58cc360f22afa
+Description: a generic-purpose lossless compression algorithm that compresses data using a combination of a modern variant of the LZ77 algorithm, Huffman coding and 2nd order context modeling.
+Status: install ok installed
+
+Package: cpprestsdk
+Version: 2.10.19
+Port-Version: 3
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: d4791aef73dbbbb6435e0dd082bd00ad7d577bdca8ce5a5cb974be7a609af7fc
+Description: C++11 JSON, REST, and OAuth library
+    The C++ REST SDK is a Microsoft project for cloud-based client-server communication in native code using a modern asynchronous C++ API design. This project aims to help C++ developers connect to and interact with services.
+Default-Features: brotli, compression
+Status: install ok installed
+
+Package: cpprestsdk
+Feature: brotli
+Depends: brotli
+Architecture: x64-windows
+Multi-Arch: same
+Description: Brotli compression support
+Status: install ok installed
+
+Package: cpprestsdk
+Feature: compression
+Depends: zlib
+Architecture: x64-windows
+Multi-Arch: same
+Description: HTTP Compression support
+Status: install ok installed
+
+Package: gtest
+Version: 1.17.0
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 71a320c636d83f500497d0a752014c8ea330fd4d898daf4652091bf00d408ba5
+Description: Google Testing and Mocking Framework
+Status: install ok installed
+
+Package: nlohmann-json
+Version: 3.12.0
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 0970e28ef02c26024b6dbd7092edb08d1374eec2005ec00d19eca795a242560a
+Description: JSON for Modern C++
+Status: install ok installed
+
+Package: vcpkg-cmake-get-vars
+Version: 2025-05-29
+Depends: vcpkg-cmake
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 491afd658cbbdee7ada3892d44d3a1cf51e87c202c1581d2c6dcc48233f5216e
+Status: install ok installed
+
+Package: vcpkg-tool-meson
+Version: 1.8.2
+Depends: vcpkg-cmake-get-vars
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 5e56c899e74f112170659b9ac5892e95bbdfec3e31d7e9eafb59e0832b07a327
+Description: Meson build system
+Status: install ok installed
+
+Package: pkgconf
+Version: 2.5.1
+Depends: vcpkg-tool-meson
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 8b38bc29496afad4c7185ae1130b2e80f5d1a6296a44adfc4be95b8aab9ca982
+Description: pkgconf is a program which helps to configure compiler and linker flags for development libraries. It is similar to pkg-config from freedesktop.org.
+Status: install ok installed
+
+Package: vcpkg-pkgconfig-get-modules
+Version: 2024-04-03
+Depends: pkgconf
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 1116294fc86846d74a31487f6ad7bdfcdee5deb8b571d40f08d3441325ff10db
+Status: install ok installed
+
+Package: sqlite3
+Version: 3.50.4
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: b4a52d15bb2b9c6181c10e3dcff237f1ddd713cedd05d9451688d0ac4db19034
+Description: SQLite is a software library that implements a self-contained, serverless, zero-configuration, transactional SQL database engine.
+Default-Features: json1
+Status: install ok installed
+
+Package: sqlite3
+Feature: json1
+Architecture: x64-windows
+Multi-Arch: same
+Description: Enable JSON functionality for sqlite3
+Status: install ok installed
+
+Package: openssl
+Version: 3.5.1
+Depends: vcpkg-cmake, vcpkg-cmake-config, vcpkg-cmake-get-vars
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 17daf2b7a0bc890c605a0363cd94fa7a0ad0376fc4479d0ff2cd80bfbc054154
+Description: OpenSSL is an open source project that provides a robust, commercial-grade, and full-featured toolkit for the Transport Layer Security (TLS) and Secure Sockets Layer (SSL) protocols. It is also a general-purpose cryptography library.
+Status: install ok installed
+
+Package: liblzma
+Version: 5.8.1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 18a5d37a12137ff11bf057e02bc66511930f0258105ca2ab54d0d70d55b6e4cd
+Description: Compression library with an API similar to that of zlib.
+Status: install ok installed
+
+Package: vcpkg-make
+Version: 2025-07-09
+Depends: vcpkg-cmake-get-vars
+Architecture: x64-windows
+Multi-Arch: same
+Abi: a6305147288c005116bbf74984ca3505f43130ebdac6bdbe08ddda41e1f88c3b
+Status: install ok installed
+
+Package: libffi
+Version: 3.5.1
+Depends: vcpkg-cmake-get-vars, vcpkg-make
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 9537f384f7494364eea908a7471a06419e9b5d7a3920c5275489719259592f09
+Description: Portable, high level programming interface to various calling conventions
+Status: install ok installed
+
+Package: expat
+Version: 2.7.1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 70cbf69e4b319bab5e2517cf29a7967ec1a24ae757de692522c8c646714d77ca
+Description: XML parser library written in C
+Status: install ok installed
+
+Package: bzip2
+Version: 1.0.8
+Port-Version: 6
+Depends: vcpkg-cmake
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 937b26ec639b14f67dbd7e904295fbacaf99837d29b8e3fede86aa56cb0e1c4e
+Description: bzip2 is a freely available, patent free, high-quality data compressor. It typically compresses files to within 10% to 15% of the best available techniques (the PPM family of statistical compressors), whilst being around twice as fast at compression and six times faster at decompression.
+Default-Features: tool
+Status: install ok installed
+
+Package: bzip2
+Feature: tool
+Architecture: x64-windows
+Multi-Arch: same
+Description: Builds bzip2 executable
+Status: install ok installed
+
+Package: vcpkg-msbuild
+Version: 2023-08-08
+Depends: vcpkg-cmake-get-vars, vcpkg-pkgconfig-get-modules
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 61926042fdbf78ba9e69c40c5cf61695b31c9a83c87d3904077bd16622110c05
+Status: install ok installed
+
+Package: vcpkg-get-python
+Version: 2025-02-09
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 7fdb2707f60e7d7de32ece0df992699079bc48dadd6c7aec80bc9664b6e79d6c
+Status: install ok installed
+
+Package: python3
+Version: 3.12.9
+Port-Version: 3
+Depends: vcpkg-get-python, vcpkg-msbuild, zlib
+Architecture: x64-windows
+Multi-Arch: same
+Abi: f814ba1a08bf3dea6ea1eef305f12020ca27b017065115a830f89a9bdb8c98bd
+Description: The Python programming language
+Default-Features: extensions
+Status: install ok installed
+
+Package: python3
+Feature: extensions
+Depends: bzip2, expat, libffi, liblzma, openssl, sqlite3, vcpkg-pkgconfig-get-modules
+Architecture: x64-windows
+Multi-Arch: same
+Description: Allow the build and usage of python extensions. On windows this requires python to be a dynamic library!
+Status: install ok installed
+
+Package: pybind11
+Version: 3.0.0
+Port-Version: 1
+Depends: python3, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: aa9bcc6a6b4605195977cca7619d537b116972ad53b17bf4b3a362d31cb152a0
+Description: pybind11 is a lightweight header-only library that exposes C++ types in Python and vice versa, mainly to create Python bindings of existing C++ code
+Status: install ok installed
+
+Package: fmt
+Version: 11.0.2
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 80b16bda6fbcbb84895032c90b06571b8b53c0af6e1a454a6242db8bb914d6e0
+Description: {fmt} is an open-source formatting library providing a fast and safe alternative to C stdio and C++ iostreams.
+Status: install ok installed
+
+Package: spdlog
+Version: 1.15.3
+Depends: fmt, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 9423d915e44ff0f37b82c56b091383bdac6c87c0d4d21abd24277b348a051c3c
+Description: Very fast, header-only/compiled, C++ logging library.
+Status: install ok installed
+
+Package: spdlog
+Feature: wchar
+Architecture: x64-windows
+Multi-Arch: same
+Description: Build with wchar_t (Windows only)
+Status: install ok installed
+

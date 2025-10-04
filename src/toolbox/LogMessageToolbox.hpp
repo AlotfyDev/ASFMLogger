@@ -11,8 +11,11 @@
 #include "structs/LogDataStructures.hpp"
 #include <string>
 #include <vector>
+#include <unordered_map>
+#include <unordered_set>
 #include <sstream>
 #include <iomanip>
+#include <atomic>
 
 // Forward declarations for Windows types
 struct _SYSTEMTIME;
@@ -21,7 +24,7 @@ struct tm;
 class LogMessageToolbox {
 private:
     // Only static variables allowed in toolbox
-    static std::atomic<uint32_t> global_message_id_counter_;
+    static std::atomic<uint32_t> message_counter_;
 
 public:
     // =================================================================================

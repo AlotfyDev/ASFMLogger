@@ -5,18 +5,18 @@
  * that integrates all the new features while maintaining backward compatibility.
  */
 
-#include "../ASFMLogger.hpp"
-#include "../src/structs/LogDataStructures.hpp"
-#include "../src/structs/ImportanceConfiguration.hpp"
-#include "../src/structs/PersistencePolicy.hpp"
-#include "../src/toolbox/LogMessageToolbox.hpp"
-#include "../src/toolbox/LoggerInstanceToolbox.hpp"
-#include "../src/managers/LoggerInstanceManager.hpp"
-#include "../src/stateful/LoggerInstance.hpp"
-#include "../src/stateful/ImportanceMapper.hpp"
-#include "../src/stateful/SmartMessageQueue.hpp"
-#include "../src/stateful/DatabaseLogger.hpp"
-#include "../src/managers/ContextualPersistenceManager.hpp"
+#include "../asfmlogger/ASFMLogger.hpp"
+#include "asfmlogger/structs/LogDataStructures.hpp"
+#include "asfmlogger/structs/ImportanceConfiguration.hpp"
+#include "asfmlogger/structs/PersistencePolicy.hpp"
+#include "asfmlogger/toolbox/LogMessageToolbox.hpp"
+#include "asfmlogger/toolbox/LoggerInstanceToolbox.hpp"
+#include "asfmlogger/managers/LoggerInstanceManager.hpp"
+#include "asfmlogger/stateful/LoggerInstance.hpp"
+#include "asfmlogger/stateful/ImportanceMapper.hpp"
+#include "asfmlogger/stateful/SmartMessageQueue.hpp"
+#include "asfmlogger/stateful/DatabaseLogger.hpp"
+#include "asfmlogger/managers/ContextualPersistenceManager.hpp"
 #include <sstream>
 #include <algorithm>
 

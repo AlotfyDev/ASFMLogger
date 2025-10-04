@@ -13,7 +13,7 @@
 #include <chrono>
 #include <cstdint>
 #include <Windows.h>
-#include "structs/LogDataStructures.hpp"
+#include "asfmlogger/structs/LogDataStructures.hpp"
 
 // Forward declarations for Windows types
 struct _SYSTEMTIME;
@@ -80,246 +80,6 @@ inline MessageImportance StringToMessageImportance(const std::string& str) {
 }
 
 // =====================================================================================
-// TIMESTAMP STRUCTURES
-// =====================================================================================
-
-/**
- * @brief High-precision timestamp structure compatible with Windows
- */
-struct LogTimestamp {
-    DWORD seconds;      ///< Seconds since Unix epoch
-    DWORD microseconds; ///< Microseconds (0-999999)
-    DWORD milliseconds; ///< Alternative millisecond representation
-
-    /**
-     * @brief Default constructor - initializes to current time
-     */
-    LogTimestamp() {
-        setToCurrentTime();
-    }
-
-    /**
-     * @brief Constructor with specific values
-     * @param sec Seconds since epoch
-     * @param usec Microseconds
-     * @param msec Milliseconds (alternative to microseconds)
-     */
-    LogTimestamp(DWORD sec, DWORD usec, DWORD msec = 0)
-        : seconds(sec), microseconds(usec), milliseconds(msec) {}
-
-    /**
-     * @brief Set timestamp to current system time
-     */
-    void setToCurrentTime();
-
-    /**
-     * @brief Convert to string representation
-     * @return Formatted timestamp string
-     */
-    std::string toString() const;
-
-    /**
-     * @brief Convert to Unix timestamp (seconds since epoch)
-     * @return Unix timestamp as uint64_t
-     */
-    uint64_t toUnixTimestamp() const {
-        return static_cast<uint64_t>(seconds);
-    }
-
-    /**
-     * @brief Convert to time_t for standard library compatibility
-     * @return time_t representation
-     */
-    time_t toTimeT() const {
-        return static_cast<time_t>(seconds);
-    }
-
-    /**
-     * @brief Get total microseconds since epoch
-     * @return Microseconds as uint64_t
-     */
-    uint64_t toMicroseconds() const {
-        return static_cast<uint64_t>(seconds) * 1000000ULL + microseconds;
-    }
-
-    /**
-     * @brief Static factory method to create current timestamp
-     * @return Current timestamp
-     */
-    static LogTimestamp now();
-
-    /**
-     * @brief Create timestamp from Unix time
-     * @param unix_seconds Seconds since Unix epoch
-     * @return LogTimestamp representation
-     */
-    static LogTimestamp fromUnixTime(time_t unix_seconds);
-
-    /**
-     * @brief Create timestamp from Windows SYSTEMTIME
-     * @param st Windows SYSTEMTIME structure
-     * @return LogTimestamp representation
-     */
-    static LogTimestamp fromSystemTime(const _SYSTEMTIME& st);
-
-    /**
-     * @brief Create timestamp from Windows FILETIME
-     * @param ft Windows FILETIME structure
-     * @return LogTimestamp representation
-     */
-    static LogTimestamp fromFileTime(const FILETIME& ft);
-
-    /**
-     * @brief Convert to Windows SYSTEMTIME
-     * @param st Output SYSTEMTIME structure
-     */
-    void toSystemTime(_SYSTEMTIME& st) const;
-
-    /**
-     * @brief Convert to Windows FILETIME
-     * @param ft Output FILETIME structure
-     */
-    void toFileTime(FILETIME& ft) const;
-
-    /**
-     * @brief Comparison operators for sorting and filtering
-     */
-    bool operator<(const LogTimestamp& other) const;
-    bool operator<=(const LogTimestamp& other) const;
-    bool operator>(const LogTimestamp& other) const;
-    bool operator>=(const LogTimestamp& other) const;
-    bool operator==(const LogTimestamp& other) const;
-    bool operator!=(const LogTimestamp& other) const;
-};
-
-// =====================================================================================
-// CORE DATA STRUCTURES
-// =====================================================================================
-
-/**
- * @brief C-style structure for log message data
- *
- * This structure is designed for:
- * - Shared memory compatibility (Windows FileMaps)
- * - Inter-process communication
- * - Network transmission
- * - Database storage
- *
- * Fixed-size arrays ensure consistent memory layout across platforms.
- */
-struct LogMessageData {
-    // Header information
-    uint32_t message_id;           ///< Unique message identifier
-    uint32_t instance_id;          ///< Logger instance ID
-    LogMessageType type;           ///< Message type (enum as int)
-    LogTimestamp timestamp;        ///< When message was created
-
-    // Process information
-    DWORD process_id;              ///< Windows process ID
-    DWORD thread_id;               ///< Windows thread ID
-
-    // Message content (fixed size for shared memory)
-    char message[1024];            ///< Actual log message
-    char component[128];           ///< Component/subsystem name
-    char function[128];            ///< Function/method name
-    char file[256];                ///< Source file name
-
-    // Metadata
-    uint32_t line_number;          ///< Source line number
-    char severity_string[16];      ///< String representation of severity
-    char reserved[64];             ///< Future extensibility
-
-    /**
-     * @brief Default constructor
-     */
-    LogMessageData() {
-        memset(this, 0, sizeof(LogMessageData));
-        timestamp.setToCurrentTime();
-        process_id = GetCurrentProcessId();
-        thread_id = GetCurrentThreadId();
-    }
-
-    /**
-     * @brief Constructor with message details
-     * @param msg_type Message type
-     * @param msg Message content
-     * @param comp Component name
-     * @param func Function name
-     * @param src_file Source file
-     * @param line Source line number
-     */
-    LogMessageData(LogMessageType msg_type, const std::string& msg,
-                   const std::string& comp, const std::string& func,
-                   const std::string& src_file = "", uint32_t line = 0);
-
-    /**
-     * @brief Set string fields with length safety
-     * @param msg Message content
-     * @param comp Component name
-     * @param func Function name
-     * @param src_file Source file name
-     * @param line Source line number
-     */
-    void setStringFields(const std::string& msg, const std::string& comp,
-                        const std::string& func, const std::string& src_file = "",
-                        uint32_t line = 0);
-
-    /**
-     * @brief Generate a unique message ID
-     * @return New unique message ID
-     */
-    static uint32_t generateMessageId();
-
-    /**
-     * @brief Convert to string representation for debugging
-     * @return Human-readable string representation
-     */
-    std::string toString() const;
-
-    /**
-     * @brief Get message content as string
-     * @return Message string (null-terminated)
-     */
-    std::string getMessage() const { return std::string(message); }
-
-    /**
-     * @brief Get component name as string
-     * @return Component string (null-terminated)
-     */
-    std::string getComponent() const { return std::string(component); }
-
-    /**
-     * @brief Get function name as string
-     * @return Function string (null-terminated)
-     */
-    std::string getFunction() const { return std::string(function); }
-
-    /**
-     * @brief Get source file as string
-     * @return Source file string (null-terminated)
-     */
-    std::string getFile() const { return std::string(file); }
-
-    /**
-     * @brief Get severity as string
-     * @return Severity string (null-terminated)
-     */
-    std::string getSeverityString() const { return std::string(severity_string); }
-
-    /**
-     * @brief Validate the message data structure
-     * @return true if structure appears valid
-     */
-    bool isValid() const;
-
-    /**
-     * @brief Get total size of the structure in bytes
-     * @return Size of LogMessageData in bytes
-     */
-    static constexpr size_t size() { return sizeof(LogMessageData); }
-};
-
-// =====================================================================================
 // UTILITY FUNCTIONS
 // =====================================================================================
 
@@ -333,13 +93,13 @@ uint32_t GenerateUniqueMessageId();
  * @brief Get current process ID (Windows)
  * @return Current process ID
  */
-DWORD GetCurrentProcessId();
+DWORD GetCurrentProcessIdImpl();
 
 /**
  * @brief Get current thread ID (Windows)
  * @return Current thread ID
  */
-DWORD GetCurrentThreadId();
+DWORD GetCurrentThreadIdImpl();
 
 /**
  * @brief Safe string copy with length checking

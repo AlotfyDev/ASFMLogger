@@ -6,7 +6,10 @@
 
 #include "stateful/LogMessage.hpp"
 #include "toolbox/TimestampToolbox.hpp"
+#include "toolbox/LogMessageToolbox.hpp"
 #include <algorithm>
+#include <sstream>
+#include <iomanip>
 
 // =====================================================================================
 // CONSTRUCTORS AND ASSIGNMENT
@@ -53,6 +56,16 @@ LogMessage& LogMessage::operator=(LogMessage&& other) noexcept {
 LogMessage LogMessage::Create(LogMessageType type, const std::string& message,
                               const std::string& component, const std::string& function,
                               const std::string& file, uint32_t line) {
+    // Validate inputs using toolbox
+    if (message.empty()) {
+        throw std::invalid_argument("Message content cannot be empty");
+    }
+
+    // Type validation using range check (enum is defined in structs)
+    if (static_cast<int>(type) < 0) {
+        throw std::invalid_argument("Invalid message type provided");
+    }
+
     return LogMessage(type, message, component, function, file, line);
 }
 
@@ -70,6 +83,14 @@ bool LogMessage::operator<(const LogMessage& other) const {
 
 bool LogMessage::operator>(const LogMessage& other) const {
     return TimestampToolbox::IsAfter(data_.timestamp, other.data_.timestamp);
+}
+
+bool LogMessage::operator<=(const LogMessage& other) const {
+    return !(*this > other);
+}
+
+bool LogMessage::operator>=(const LogMessage& other) const {
+    return !(*this < other);
 }
 
 // =====================================================================================

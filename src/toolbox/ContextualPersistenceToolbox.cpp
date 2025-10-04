@@ -1214,7 +1214,9 @@ bool ContextualPersistenceToolbox::PersistToDatabase(const LogMessageData& messa
         SQLBindParameter(hstmt, 4, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, 0, 0, (SQLPOINTER)&message.type, 0, &cbMessageType);
 
         // Use configurable severity mapping from context
-        std::string severity = GetSeverityString(message.type, context.severity_mapping);
+        SeverityMappingConfiguration severity_config;
+        memcpy(&severity_config, &context.severity_mapping, sizeof(SeverityMappingConfiguration));
+        std::string severity = GetSeverityString(message.type, severity_config);
         SQLBindParameter(hstmt, 5, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 20, 0, (SQLPOINTER)severity.c_str(), 0, &cbSeverity);
 
         DWORD timestamp_seconds = ContextualPersistenceToolbox::GetCurrentTimestamp();
@@ -1320,9 +1322,12 @@ bool ContextualPersistenceToolbox::PersistToSharedMemory(const LogMessageData& m
         }
 
         // Create a formatted message for shared memory
+        SeverityMappingConfiguration severity_config_shmem;
+        memcpy(&severity_config_shmem, &context.severity_mapping, sizeof(SeverityMappingConfiguration));
+
         std::ostringstream shared_msg;
         shared_msg << "[" << ContextualPersistenceToolbox::GetCurrentTimestamp() << "] "
-                   << "[" << GetSeverityString(message.type, context.severity_mapping) << "] "
+                   << "[" << GetSeverityString(message.type, severity_config_shmem) << "] "
                    << "[" << context.application_name << "] "
                    << "[" << message.component << "] "
                    << message.message << "\n";

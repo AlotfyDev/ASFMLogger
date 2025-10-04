@@ -15,6 +15,12 @@
         "deque": "cpp",
         "queue": "cpp",
         "thread": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "ctime": "cpp",
+        "iomanip": "cpp",
+        "cstdlib": "cpp",
+        "fstream": "cpp",
+        "mutex": "cpp",
+        "numeric": "cpp"
     }
 }

@@ -12,9 +12,23 @@
 #include "structs/DatabaseConfiguration.hpp"
 #include <cstdint>
 
+// ODBC headers for SQLHDBC type
+#ifdef _WIN32
+#include <windows.h>
+#include <sql.h>
+#include <sqlext.h>
+#endif
+
+// Define SQLHDBC if not available from system headers
+#ifndef SQLHDBC
+typedef void* SQLHDBC;  // ODBC connection handle
+#endif
+
 // =====================================================================================
 // PERSISTENCE POLICY DATA STRUCTURES
 // =====================================================================================
+
+
 
 /**
  * @brief POD structure for configurable persistence rules per application
@@ -75,8 +89,10 @@ struct PersistencePolicy {
     char reserved[256];                        ///< Reserved for future use
 };
 
+
+
 /**
- * @brief POD structure for persistence decision context
+ * @brief POD structure for persist decision context
  * Contains all runtime information needed for persistence decisions
  */
 struct PersistenceDecisionContext {
@@ -119,8 +135,8 @@ struct PersistenceDecisionContext {
     // Database configuration context
     DatabaseConnectionConfig database_config;  ///< Database connection configuration
 
-    // Severity mapping configuration
-    SeverityMappingConfiguration severity_mapping;  ///< Configurable severity string mapping
+    // Severity mapping configuration - use named struct type for type safety
+    SeverityMappingConfiguration severity_mapping;                ///< Configurable severity string mapping
 
     // Future extensibility
     char reserved[256];                        ///< Reserved for future use

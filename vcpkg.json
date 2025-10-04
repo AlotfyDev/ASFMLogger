@@ -1,0 +1,53 @@
+{
+  "name": "asfmlogger",
+  "version": "1.0.0",
+  "description": "Advanced Scalable Fault-tolerant Multi-language Logger",
+  "dependencies": [
+    "spdlog",
+    "gtest",
+    "benchmark",
+    "nlohmann-json",
+    "pybind11",
+    "cpprestsdk",
+    {
+      "name": "spdlog",
+      "features": ["wchar"]
+    }
+  ],
+  "$comment": "External dependencies for full framework functionality (SF-P0 compliant)",
+  "features": {
+    "odbc": {
+      "description": "Enable SQL Server support via ODBC",
+      "dependencies": [
+        {
+          "name": "odbc",
+          "platform": "windows"
+        }
+      ]
+    },
+    "full-testing": {
+      "description": "Full testing and benchmarking capabilities",
+      "dependencies": [
+        "gtest",
+        "benchmark"
+      ]
+    },
+    "python-bindings": {
+      "description": "Python language bindings support",
+      "dependencies": [
+        "pybind11",
+        "python3"
+      ]
+    },
+    "web-interface": {
+      "description": "Web server and REST API capabilities",
+      "dependencies": [
+        "cpprestsdk"
+      ]
+    },
+    "mql5-integration": {
+      "description": "MQL5 wrapper and communication interfaces (requires MetaTrader 5 SDK)",
+      "dependencies": []
+    }
+  }
+}

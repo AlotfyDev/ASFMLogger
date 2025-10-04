@@ -15,7 +15,6 @@
 
 // Forward declarations for Windows types
 struct _SYSTEMTIME;
-struct FILETIME;
 struct tm;
 
 class TimestampToolbox {

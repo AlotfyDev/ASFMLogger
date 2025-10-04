@@ -97,11 +97,60 @@ ASFMLogger follows a sophisticated **3-layer toolbox architecture**:
 
 ### Building
 
+#### Quick Start (Recommended)
+
 ```bash
+# Clone repository
+git clone https://github.com/AlotfyDev/ASFMLogger.git
+cd ASFMLogger
+
+# Create build directory
 mkdir build
 cd build
-cmake ..
-make
+
+# Configure with vcpkg (recommended - includes all dependencies)
+cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+
+# Build in Release mode
+cmake --build . --config Release
+
+# Run tests (if built with tests enabled)
+ctest --output-on-failure
+```
+
+#### Advanced Build Options
+
+```bash
+# Header-only build (no compilation required)
+mkdir build_header
+cd build_header
+cmake .. -DASFMLOGGER_HEADER_ONLY=ON
+cmake --build . --config Release
+
+# Build with local dependencies (fallback)
+mkdir build_local
+cd build_local
+cmake .. -DCMAKE_BUILD_TYPE=Release -DASFMLOGGER_USE_LOCAL_DEPS=ON
+cmake --build . --config Release
+
+# Debug build with tests and benchmarks
+mkdir build_debug
+cd build_debug
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DASFMLOGGER_BUILD_TESTS=ON -DASFMLOGGER_BUILD_BENCHMARKS=ON
+cmake --build . --config Debug
+```
+
+#### Windows Build (Visual Studio)
+
+```cmd
+# Using Visual Studio 2022
+mkdir build_vs
+cd build_vs
+cmake .. -G "Visual Studio 17 2022" -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake --build . --config Release
+
+# Open in Visual Studio
+start ASFMLogger.sln
 ```
 
 ### Integration
